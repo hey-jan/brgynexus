@@ -1,0 +1,324 @@
+BRGYNEXUS - BARANGAY DOCUMENT REQUEST SYSTEM (NEXT.JS)
+VERY DETAILED STEP-BY-STEP BUILD CHECKLIST (ORDERED)
+
+========================================
+PHASE 1: PROJECT SETUP
+========================================
+- Initialize Next.js project (App Router, TypeScript, Tailwind)
+- Run project and verify it works
+- Clean default files
+- Setup global layout
+- Configure Tailwind theme (blue)
+- Create folder structure:
+  /app /components /lib /utils /types /styles
+- Setup routing folders (login, register, dashboard, etc.)
+- Install dependencies (Prisma, JWT, QR, PDF)
+- Initialize Prisma
+- Setup environment variables
+- Setup Prisma client
+- Setup integrations:
+  - Google Maps API (map)
+  - SendGrid (email)
+- Final test (no errors)
+
+========================================
+PHASE 2: LANDING PAGE (PRE-AUTH)
+========================================
+Purpose:
+- Entry point before login
+
+NavBar:
+- Home
+- Services
+- About Us
+- FAQ
+- Contact
+- Login (right side)
+- Register (right side)
+
+Tasks:
+- Design hero section (BrgyNexus intro)
+- Add CTA buttons (Login/Register)
+- Add sections:
+  - Services overview
+  - About barangay/system
+  - FAQ
+  - Contact info
+- Embed Google Map (barangay location)
+- Contact form using SendGrid email
+- Make navbar sticky
+- Apply blue SaaS theme
+
+========================================
+PHASE 3: UI FOUNDATION (LAYOUT SYSTEM)
+
+
+NOTE ON RESPONSIVENESS:
+- The entire BrgyNexus system MUST be mobile responsive.
+- All layouts (landing page, dashboard, sidebar, forms) should adapt to:
+  - Mobile (small screens)
+  - Tablet
+  - Desktop
+- Use responsive design principles:
+  - Flexible layouts
+  - Collapsible sidebar on mobile
+  - Stacked components on smaller screens
+  - Touch-friendly buttons and spacing
+
+========================================
+- Create global layout wrapper
+- Implement Navbar component
+- Implement Sidebar component
+- Setup responsive layout
+- Create reusable UI components:
+  Button, Input, Card, Modal, Badge
+- Add responsive Map component
+
+========================================
+PHASE 4: SIDEBAR PER ROLE
+========================================
+RESIDENT:
+- Dashboard
+- Request Document
+- My Requests
+- Notifications
+- Profile
+- Logout
+
+STAFF:
+- Dashboard
+- All Requests
+- Pending Requests
+- Approved Requests
+- Generate Documents
+- QR Verification
+- Profile
+- Logout
+
+ADMIN:
+- Dashboard
+- User Management
+- All Requests
+- Analytics
+- System Logs
+- Settings
+- Profile
+- Logout
+
+========================================
+PHASE 5: DATABASE DESIGN
+========================================
+
+Detailed Tables:
+
+users
+- user_id (PK)
+- first_name
+- middle_name
+- last_name
+- email
+- password_hash
+- phone
+- role (resident / staff / admin)
+- created_at
+
+residents_profile
+- resident_id (PK)
+- user_id (FK → users.user_id)
+- gender
+- address
+- birthdate
+- civil_status
+- is_verified
+
+documents
+- document_id (PK)
+- document_name
+- description
+- fee
+- processing_days
+- is_active
+
+document_requests
+- request_id (PK)
+- resident_id (FK → residents_profile.resident_id)
+- document_id (FK → documents.document_id)
+- purpose
+- status (pending / approved / rejected / released)
+- request_date
+- updated_at
+- released_at
+- handled_by (FK → users.user_id)
+
+request_status_logs
+- log_id (PK)
+- request_id (FK → document_requests.request_id)
+- status
+- remarks
+- changed_by (FK → users.user_id)
+- timestamp
+
+issued_documents
+- issued_id (PK)
+- request_id (FK → document_requests.request_id)
+- document_number
+- qr_code_hash
+- issued_date
+- expiry_date
+
+payments
+- payment_id (PK)
+- request_id (FK → document_requests.request_id)
+- amount
+- payment_method (cash / gcash / other)
+- reference_number
+- paid_at
+- received_by (FK → users.user_id, nullable)
+
+staff_assignments
+- assignment_id (PK)
+- user_id (FK → users.user_id)
+- position (secretary / clerk / admin officer etc.)
+- is_active
+
+audit_logs
+- audit_id (PK)
+- user_id (FK → users.user_id)
+- action
+- details
+- timestamp
+
+relationships
+- users 1–1 residents_profile
+- users 1–many document_requests (via handled_by)
+- users 1–many payments (via received_by)
+- users 1–many audit_logs
+- users 1–many request_status_logs (via changed_by)
+- users 1–many staff_assignments
+
+- residents_profile 1–many document_requests
+- documents 1–many document_requests
+
+- document_requests 1–many request_status_logs
+- document_requests 1–1 issued_documents
+- document_requests 1–1 payments
+
+- Add optional:
+  - email_logs (SendGrid)
+  - latitude / longitude (Google Maps)
+
+========================================
+PHASE 6: AUTHENTICATION
+========================================
+- Register system
+- Login system
+- JWT handling
+- Role-based access
+- Route protection
+- Email verification (SendGrid)
+
+========================================
+PHASE 7: DASHBOARDS
+========================================
+Resident:
+- Request overview
+
+Staff:
+- Request management
+
+Admin:
+- Analytics + users
+
+- Optional map widget (Google Maps)
+- Optional email notifications (SendGrid)
+
+========================================
+PHASE 8: REQUEST SYSTEM
+========================================
+- Create request
+- View requests
+- Filter & details
+- Send email confirmation (SendGrid)
+
+========================================
+PHASE 9: DOCUMENT SYSTEM
+========================================
+- Generate PDF
+- Store file
+- Link to request
+- Send email when ready (SendGrid)
+
+========================================
+PHASE 10: QR SYSTEM
+========================================
+- Generate QR
+- Store code
+- Verification endpoint
+- Verification page
+
+========================================
+PHASE 11: ROLE ACTIONS
+========================================
+Resident:
+- Submit / track / download
+- Receive email updates
+
+Staff:
+- Approve / reject / generate
+- Trigger email notifications
+
+Admin:
+- Manage / monitor
+- Monitor email logs
+
+========================================
+PHASE 12: SECURITY
+========================================
+- Input validation
+- JWT security
+- Access control
+- Secure API keys (Maps + SendGrid)
+
+========================================
+
+========================================
+PHASE 13: NOTIFICATION SYSTEM (TOASTS)
+========================================
+Library:
+- Sonner (React toast library)
+
+Purpose:
+- Provide real-time feedback without interrupting user actions
+
+Use Cases:
+- Success:
+  - Request submitted successfully
+  - Document generated
+  - User created
+- Error:
+  - Login failed
+  - Invalid input
+  - Server error
+- Info:
+  - Loading data
+  - Processing request
+
+Rules:
+- Show at top-right corner
+- Auto-dismiss after a few seconds
+- Keep messages short and clear
+- Do not spam notifications
+
+
+========================================
+PHASE 14: FINAL POLISH
+========================================
+- Loading states
+- Notifications
+- Responsive UI (mobile-first design required)
+- Animations
+- Test Google Maps + SendGrid integrations
+
+========================================
+END OF DOCUMENT
+========================================
