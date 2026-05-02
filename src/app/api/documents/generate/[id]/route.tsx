@@ -128,7 +128,7 @@ export async function POST(
           requestId: docReq.id,
           status: 'RELEASED',
           remarks: `Document ${docNumber} generated.`,
-          changedById: payload.id as string
+          changedById: payload.userId as string
         }
       });
     }
