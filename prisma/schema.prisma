@@ -1,13 +1,164 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  RESIDENT
+  STAFF
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum CivilStatus {
+  SINGLE
+  MARRIED
+  WIDOWED
+  SEPARATED
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  RELEASED
+}
+
+enum PaymentMethod {
+  CASH
+  GCASH
+  OTHER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  firstName    String
+  middleName   String?
+  lastName     String
+  email        String   @unique
+  passwordHash String
+  phone        String?
+  role         Role     @default(RESIDENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  residentProfile  ResidentProfile?
+  handledRequests  DocumentRequest[]  @relation("HandledBy")
+  receivedPayments Payment[]          @relation("ReceivedBy")
+  statusLogs       RequestStatusLog[] @relation("ChangedBy")
+  staffAssignments StaffAssignment[]
+  auditLogs        AuditLog[]
+}
+
+model ResidentProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  gender      Gender
+  address     String
+  birthdate   DateTime
+  civilStatus CivilStatus
+  isVerified  Boolean     @default(false)
+
+  requests DocumentRequest[]
+}
+
+model Document {
+  id             String  @id @default(uuid())
+  name           String
+  description    String?
+  fee            Float   @default(0)
+  processingDays Int     @default(1)
+  isActive       Boolean @default(true)
+
+  requests DocumentRequest[]
+}
+
+model DocumentRequest {
+  id         String          @id @default(uuid())
+  residentId String
+  resident   ResidentProfile @relation(fields: [residentId], references: [id])
+  documentId String
+  document   Document        @relation(fields: [documentId], references: [id])
+  purpose    String
+  status     RequestStatus   @default(PENDING)
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  releasedAt DateTime?
+
+  handledById String?
+  handledBy   User?   @relation("HandledBy", fields: [handledById], references: [id])
+
+  statusLogs     RequestStatusLog[]
+  issuedDocument IssuedDocument?
+  payment        Payment?
+}
+
+model RequestStatusLog {
+  id        String          @id @default(uuid())
+  requestId String
+  request   DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  status    RequestStatus
+  remarks   String?
+
+  changedById String
+  changedBy   User   @relation("ChangedBy", fields: [changedById], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model IssuedDocument {
+  id             String          @id @default(uuid())
+  requestId      String          @unique
+  request        DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  documentNumber String          @unique
+  qrCodeHash     String          @unique
+
+  issuedDate DateTime  @default(now())
+  expiryDate DateTime?
+}
+
+model Payment {
+  id            String          @id @default(uuid())
+  requestId     String          @unique
+  request       DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  amount        Float
+  paymentMethod PaymentMethod
+  referenceNo   String?
+
+  paidAt DateTime @default(now())
+
+  receivedById String?
+  receivedBy   User?   @relation("ReceivedBy", fields: [receivedById], references: [id])
+}
+
+model StaffAssignment {
+  id       String  @id @default(uuid())
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  position String
+  isActive Boolean @default(true)
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
 }
