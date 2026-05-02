@@ -20,13 +20,13 @@ async function main() {
   await prisma.payment.deleteMany();
   await prisma.documentRequest.deleteMany();
   await prisma.document.deleteMany();
-  
+
   // 2. Execute seeds in order of dependency
   const users = await seedUsers(prisma);
   const documents = await seedDocuments(prisma);
   await seedRequests(prisma, users, documents);
 
-  console.log('✅ Database seeded successfully!');
+  console.log('Database seeded successfully!');
 }
 
 main()
