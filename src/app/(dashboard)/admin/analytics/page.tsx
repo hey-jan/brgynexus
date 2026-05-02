@@ -6,15 +6,17 @@ import { toast } from "sonner";
 
 export default function AnalyticsPage() {
   const [data, setData] = React.useState<any>(null);
+  const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
+    setIsMounted(true);
     fetch('/api/analytics')
       .then(res => res.json())
       .then(setData)
       .catch(() => toast.error("Failed to load analytics"));
   }, []);
 
-  if (!data) return (
+  if (!isMounted || !data) return (
     <div>
       <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Analytics Dashboard</h1>
       <p className="text-slate-500">Loading charts...</p>
@@ -27,10 +29,10 @@ export default function AnalyticsPage() {
       
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Request Status Chart */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800 min-w-0">
           <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Request Status Breakdown</h2>
-          <div className="h-80 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-80 w-full min-h-[320px]">
+            <ResponsiveContainer width="100%" height="100%" key={`status-${isMounted}`}>
               <BarChart data={data.statusChart} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                 <XAxis dataKey="name" stroke="#64748b" />
@@ -43,10 +45,10 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Volume Over Time Chart */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800 min-w-0">
           <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Request Volume (Last 7 Days)</h2>
-          <div className="h-80 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-80 w-full min-h-[320px]">
+            <ResponsiveContainer width="100%" height="100%" key={`volume-${isMounted}`}>
               <LineChart data={data.volumeChart} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                 <XAxis dataKey="date" stroke="#64748b" />

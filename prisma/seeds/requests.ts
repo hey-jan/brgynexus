@@ -5,20 +5,16 @@ export async function seedRequests(prisma: any, users: any, documentIds: string[
 
   const requestsToCreate = [];
   
-  // Generate 50 random requests over the past 30 days
-  for (let i = 0; i < 50; i++) {
+  // Generate 2 sample requests
+  for (let i = 0; i < 2; i++) {
     const pastDate = new Date();
-    pastDate.setDate(pastDate.getDate() - Math.floor(Math.random() * 30));
-    
-    const statusStr = statuses[Math.floor(Math.random() * statuses.length)];
-    const docId = documentIds[Math.floor(Math.random() * documentIds.length)];
     
     requestsToCreate.push({
-      residentId: residentIds[i % 2],
-      documentId: docId,
-      purpose: 'Generated sample request for analytics',
-      status: statusStr as any,
-      handledById: (statusStr === 'PENDING') ? null : staffId,
+      residentId: residentIds[i % residentIds.length],
+      documentId: documentIds[0],
+      purpose: 'Applying for employment requirements',
+      status: 'PENDING',
+      handledById: null,
       createdAt: pastDate,
       updatedAt: pastDate,
     });

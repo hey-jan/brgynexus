@@ -42,7 +42,6 @@ export function Sidebar({ role, onMobileClose }: SidebarProps) {
     { href: "/staff", label: "Dashboard", icon: LayoutDashboard },
     { href: "/staff/requests", label: "All Requests", icon: FileText },
     { href: "/staff/pending", label: "Pending Requests", icon: Clock },
-    { href: "/staff/approved", label: "Approved Requests", icon: CheckCircle },
     { href: "/staff/generate", label: "Generate Documents", icon: FileBadge },
     { href: "/staff/verify", label: "QR Verification", icon: QrCode },
     { href: "/staff/profile", label: "Profile", icon: User },

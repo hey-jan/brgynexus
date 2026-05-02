@@ -14,7 +14,9 @@ export async function GET(request: Request) {
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     
     const { payload } = await jwtVerify(token, secret);
-    if (payload.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (payload.role !== 'ADMIN' && payload.role !== 'STAFF') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     // 1. Total Residents
     const totalResidents = await prisma.user.count({ where: { role: 'RESIDENT' } });
