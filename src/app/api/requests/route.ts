@@ -14,18 +14,25 @@ export async function GET(request: NextRequest) {
     
     const { payload } = await jwtVerify(token, secret);
     
+    const url = new URL(request.url);
+    const statusFilter = url.searchParams.get('status');
+
     let requests;
     if (payload.role === 'RESIDENT') {
       const profile = await prisma.residentProfile.findUnique({ where: { userId: payload.userId as string } });
       if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
       
       requests = await prisma.documentRequest.findMany({
-        where: { residentId: profile.id },
+        where: { 
+          residentId: profile.id,
+          ...(statusFilter ? { status: statusFilter as any } : {})
+        },
         include: { document: true },
         orderBy: { createdAt: 'desc' },
       });
     } else {
       requests = await prisma.documentRequest.findMany({
+        where: statusFilter ? { status: statusFilter as any } : undefined,
         include: { 
           document: true, 
           resident: { include: { user: true } } 

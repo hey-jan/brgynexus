@@ -38,7 +38,7 @@ export default function MyRequestsPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Document</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Date Requested</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Purpose</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Instructions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200 dark:bg-slate-900 dark:divide-slate-800">
@@ -49,7 +49,10 @@ export default function MyRequestsPage() {
               ) : (
                 requests.map((req) => (
                   <tr key={req.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">{req.document?.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">
+                      <div>{req.document?.name}</div>
+                      <div className="text-xs text-slate-500 font-normal truncate max-w-[200px]">{req.purpose}</div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                       {format(new Date(req.createdAt), 'MMM d, yyyy')}
                     </td>
@@ -58,7 +61,17 @@ export default function MyRequestsPage() {
                         {req.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">{req.purpose}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+                      {req.status === 'PENDING' && <span className="text-yellow-600 dark:text-yellow-500 text-xs font-medium">Waiting for staff review</span>}
+                      {req.status === 'APPROVED' && <span className="text-blue-600 dark:text-blue-400 text-xs font-medium">Processing document...</span>}
+                      {req.status === 'RELEASED' && (
+                        <div className="bg-green-50 text-green-700 border border-green-200 p-2 rounded-md text-xs dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/50">
+                          <span className="font-bold block mb-1">Ready for Pickup!</span>
+                          Proceed to Barangay Hall to pay fee and claim your document.
+                        </div>
+                      )}
+                      {req.status === 'REJECTED' && <span className="text-red-600 dark:text-red-400 text-xs font-medium">Request denied. Contact Barangay.</span>}
+                    </td>
                   </tr>
                 ))
               )}
