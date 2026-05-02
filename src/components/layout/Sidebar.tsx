@@ -15,7 +15,8 @@ import {
   Users, 
   BarChart, 
   Settings, 
-  ShieldAlert
+  ShieldAlert,
+  X
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 
@@ -61,18 +62,30 @@ export function Sidebar({ role, onMobileClose }: SidebarProps) {
 
   return (
     <div className="flex h-full w-full flex-col bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800">
-      <div className="flex h-16 items-center px-6 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex h-16 items-center px-4 border-b border-slate-200 dark:border-slate-800">
         <span className="text-xl font-bold text-blue-600 dark:text-blue-500">
           Brgy<span className="text-slate-900 dark:text-white">Nexus</span>
         </span>
         <span className="ml-2 text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-700 rounded-full dark:bg-blue-900/50 dark:text-blue-400">
           {role}
         </span>
+        {onMobileClose && (
+          <button 
+            onClick={onMobileClose} 
+            className="ml-auto lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto">
         {links.map((link) => {
-          const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+          const isRootRolePath = ["/admin", "/staff", "/resident"].includes(link.href);
+          const isActive = isRootRolePath 
+            ? pathname === link.href 
+            : pathname === link.href || pathname.startsWith(link.href + "/");
+            
           const Icon = link.icon;
           
           return (

@@ -135,7 +135,8 @@ export async function POST(
 
     // 4. Generate QR Code
     // In Phase 10, this hash will link to the verification portal.
-    const verificationUrl = `http://localhost:3000/verify/${issuedDoc.qrCodeHash}`;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const verificationUrl = `${appUrl}/verify/${issuedDoc.qrCodeHash}`;
     const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
     // 5. Generate PDF Stream

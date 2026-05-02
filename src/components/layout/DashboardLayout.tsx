@@ -4,6 +4,8 @@ import * as React from "react";
 import { Sidebar } from "./Sidebar";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/utils/utils";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Role = "RESIDENT" | "STAFF" | "ADMIN";
 
@@ -23,27 +25,29 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
       </div>
 
       {/* Mobile Sidebar overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 flex lg:hidden">
-          <div 
-            className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm" 
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="relative flex w-64 flex-1 flex-col bg-white dark:bg-slate-900">
-            <div className="absolute top-0 right-0 -mr-12 pt-4">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="text-white hover:bg-white/20"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <X className="h-6 w-6" />
-              </Button>
-            </div>
-            <Sidebar role={role} onMobileClose={() => setIsMobileMenuOpen(false)} />
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 z-40 flex lg:hidden">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative flex w-64 flex-1 flex-col bg-white dark:bg-slate-900 shadow-xl"
+            >
+              <Sidebar role={role} onMobileClose={() => setIsMobileMenuOpen(false)} />
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* Main content */}
       <div className="flex flex-1 flex-col w-0 overflow-hidden">
