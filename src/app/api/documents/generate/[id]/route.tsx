@@ -6,6 +6,8 @@ import React from 'react';
 import fs from 'fs';
 import { Page, Text, View, Document, StyleSheet, renderToStream, Image } from '@react-pdf/renderer';
 import path from 'path';
+import { sendEmail } from '@/lib/resend';
+import { RequestEmail } from '@/components/emails/RequestEmail';
 
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET || 'fallback_secret_for_development_only_12345'
@@ -150,6 +152,20 @@ export async function POST(
           remarks: `Document ${docNumber} generated.`,
           changedById: payload.userId as string
         }
+      });
+
+      // 3.1 Send Email Notification
+      await sendEmail({
+        to: docReq.resident.user.email,
+        subject: `Document Ready: ${docReq.document.name}`,
+        react: (
+          <RequestEmail 
+            firstName={docReq.resident.user.firstName}
+            documentName={docReq.document.name}
+            status="RELEASED"
+            docNumber={docNumber}
+          />
+        )
       });
     }
 

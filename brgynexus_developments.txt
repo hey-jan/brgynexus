@@ -18,7 +18,7 @@ PHASE 1: PROJECT SETUP
 - Setup Prisma client
 - Setup integrations:
   - Google Maps API (map)
-  - SendGrid (email)
+  - Resend (email)
 - Final test (no errors)
 
 ========================================
@@ -45,7 +45,7 @@ Tasks:
   - FAQ
   - Contact info
 - Embed Google Map (barangay location)
-- Contact form using SendGrid email
+- Contact form using Resend email
 - Make navbar sticky
 - Apply blue SaaS theme
 
@@ -204,7 +204,7 @@ relationships
 - document_requests 1–1 payments
 
 - Add optional:
-  - email_logs (SendGrid)
+  - email_logs (Resend)
   - latitude / longitude (Google Maps)
 
 ========================================
@@ -215,7 +215,7 @@ PHASE 6: AUTHENTICATION
 - JWT handling
 - Role-based access
 - Route protection
-- Email verification (SendGrid)
+- Email verification (Resend)
 
 ========================================
 PHASE 7: DASHBOARDS
@@ -230,7 +230,7 @@ Admin:
 - Analytics + users
 
 - Optional map widget (Google Maps)
-- Optional email notifications (SendGrid)
+- Optional email notifications (Resend)
 
 ========================================
 PHASE 8: REQUEST SYSTEM
@@ -238,7 +238,7 @@ PHASE 8: REQUEST SYSTEM
 - Create request
 - View requests
 - Filter & details
-- Send email confirmation (SendGrid)
+- Send email confirmation (Resend)
 
 ========================================
 PHASE 9: DOCUMENT SYSTEM
@@ -246,7 +246,7 @@ PHASE 9: DOCUMENT SYSTEM
 - Generate PDF
 - Store file
 - Link to request
-- Send email when ready (SendGrid)
+- Send email when ready (Resend)
 
 ========================================
 PHASE 10: QR SYSTEM
@@ -277,7 +277,7 @@ PHASE 12: SECURITY
 - Input validation
 - JWT security
 - Access control
-- Secure API keys (Maps + SendGrid)
+- Secure API keys (Maps + Resend)
 
 ========================================
 
@@ -317,7 +317,7 @@ PHASE 14: FINAL POLISH
 - Notifications
 - Responsive UI (mobile-first design required)
 - Animations
-- Test Google Maps + SendGrid integrations
+- Test Google Maps + Resend integrations
 
 ========================================
 END OF DOCUMENT
