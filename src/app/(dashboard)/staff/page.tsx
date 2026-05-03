@@ -22,7 +22,7 @@ export default function StaffDashboard() {
       label: "Pending Review",
       value: stats?.pendingCount || 0,
       icon: Clock,
-      color: "text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-500",
+      color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
       href: "/staff/pending",
     },
     {
@@ -36,7 +36,7 @@ export default function StaffDashboard() {
       label: "Released Today",
       value: stats?.releasedCount || 0,
       icon: CheckCircle,
-      color: "text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
+      color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
       href: "/staff/requests",
     },
   ];

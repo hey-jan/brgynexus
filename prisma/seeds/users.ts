@@ -12,6 +12,7 @@ export async function seedUsers(prisma: any) {
       lastName: 'Admin', 
       email: 'admin@brgynexus.com', 
       passwordHash, 
+      phone: '09001234567',
       role: 'ADMIN' 
     },
   });
@@ -25,6 +26,7 @@ export async function seedUsers(prisma: any) {
       lastName: 'Staff', 
       email: 'staff@brgynexus.com', 
       passwordHash, 
+      phone: '09009876543',
       role: 'STAFF' 
     },
   });
@@ -55,7 +57,7 @@ export async function seedUsers(prisma: any) {
     },
   });
 
-  // Resident 2
+  // Resident 2 (Maria)
   const resident2 = await prisma.user.upsert({
     where: { email: 'maria@brgynexus.com' },
     update: {},
@@ -81,6 +83,36 @@ export async function seedUsers(prisma: any) {
     },
   });
 
+  // John Earl Balabat (Personal Test Profile)
+  const johnEarl = await prisma.user.upsert({
+    where: { email: 'johnearl.balabat@gmail.com' },
+    update: {},
+    create: { 
+      firstName: 'John Earl', 
+      lastName: 'Balabat', 
+      email: 'johnearl.balabat@gmail.com', 
+      passwordHash, 
+      role: 'RESIDENT' 
+    },
+  });
+
+  const johnEarlProfile = await prisma.residentProfile.upsert({
+    where: { userId: johnEarl.id },
+    update: {},
+    create: { 
+      userId: johnEarl.id, 
+      address: 'Brgy. Nexus, City of Manila', 
+      gender: 'MALE', 
+      civilStatus: 'SINGLE', 
+      birthdate: new Date('1990-01-01'),
+      isVerified: true
+    },
+  });
+
   console.log('✓ Seeded Users & Profiles');
-  return { admin, staff, residents: [profile1, profile2] };
+  return { 
+    admin, 
+    staff, 
+    residents: [profile1, profile2, johnEarlProfile] 
+  };
 }

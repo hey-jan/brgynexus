@@ -5,19 +5,29 @@ export async function seedRequests(prisma: any, users: any, documentIds: string[
 
   const requestsToCreate = [];
   
-  // Generate 2 sample requests
+  // Generate 2 sample requests for standard residents
   for (let i = 0; i < 2; i++) {
-    const pastDate = new Date();
-    
     requestsToCreate.push({
-      residentId: residentIds[i % residentIds.length],
+      residentId: residentIds[i % 2],
       documentId: documentIds[0],
       purpose: 'Applying for employment requirements',
       status: 'PENDING',
       handledById: null,
-      createdAt: pastDate,
-      updatedAt: pastDate,
     });
+  }
+
+  // Add 3 APPROVED requests for John Earl Balabat for immediate email testing
+  const johnEarlId = residentIds[2]; // John Earl is the 3rd resident we added
+  if (johnEarlId) {
+    for (let i = 0; i < 3; i++) {
+      requestsToCreate.push({
+        residentId: johnEarlId,
+        documentId: documentIds[i % documentIds.length],
+        purpose: `Testing Email Notifications ${i + 1}`,
+        status: 'APPROVED',
+        handledById: staffId,
+      });
+    }
   }
 
   await prisma.documentRequest.createMany({

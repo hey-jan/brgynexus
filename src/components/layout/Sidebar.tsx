@@ -99,7 +99,7 @@ export function Sidebar({ role, onMobileClose }: SidebarProps) {
                   : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
               )}
             >
-              <Icon className="mr-3 h-5 w-5 flex-shrink-0" />
+              <Icon className="mr-3 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
               {link.label}
             </Link>
           );

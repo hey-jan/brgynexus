@@ -39,8 +39,8 @@ export default function AdminDashboard() {
 
         {/* Pending Requests */}
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex items-center space-x-4">
-          <div className="p-3 bg-yellow-100 rounded-full dark:bg-yellow-900/50">
-            <Clock className="h-6 w-6 text-yellow-600 dark:text-yellow-500" />
+          <div className="p-3 bg-blue-100 rounded-full dark:bg-blue-900/50">
+            <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Pending Requests</p>
@@ -50,8 +50,8 @@ export default function AdminDashboard() {
 
         {/* Documents Released */}
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex items-center space-x-4">
-          <div className="p-3 bg-green-100 rounded-full dark:bg-green-900/50">
-            <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+          <div className="p-3 bg-blue-100 rounded-full dark:bg-blue-900/50">
+            <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Released</p>
@@ -61,8 +61,8 @@ export default function AdminDashboard() {
 
         {/* Revenue */}
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex items-center space-x-4">
-          <div className="p-3 bg-purple-100 rounded-full dark:bg-purple-900/50">
-            <DollarSign className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+          <div className="p-3 bg-blue-100 rounded-full dark:bg-blue-900/50">
+            <DollarSign className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Revenue</p>
