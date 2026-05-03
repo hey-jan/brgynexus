@@ -3,7 +3,9 @@ import prisma from '@/lib/prisma';
 import { jwtVerify } from 'jose';
 import QRCode from 'qrcode';
 import React from 'react';
+import fs from 'fs';
 import { Page, Text, View, Document, StyleSheet, renderToStream, Image } from '@react-pdf/renderer';
+import path from 'path';
 
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET || 'fallback_secret_for_development_only_12345'
@@ -20,13 +22,31 @@ const styles = StyleSheet.create({
   signatureLine: { borderTop: '1px solid #000', width: 200, paddingTop: 5, marginTop: 40 },
   qrSection: { marginTop: 40, alignSelf: 'flex-start', alignItems: 'center' },
   qrImage: { width: 100, height: 100 },
-  qrText: { fontSize: 8, marginTop: 5, color: '#666' }
+  qrText: { fontSize: 8, marginTop: 5, color: '#666' },
+  watermarkContainer: {
+    position: 'absolute',
+    top: '30%',
+    left: '15%',
+    width: '70%',
+    opacity: 0.15,
+    zIndex: -1,
+  },
+  watermarkImage: {
+    width: '100%',
+  }
 });
 
 // React PDF Component
-const Certificate = ({ req, qrDataUrl, docNumber }: { req: any, qrDataUrl: string, docNumber: string }) => (
+const Certificate = ({ req, qrDataUrl, docNumber, logoBuffer }: { req: any, qrDataUrl: string, docNumber: string, logoBuffer: Buffer | null }) => (
   <Document>
     <Page size="A4" style={styles.page}>
+      {/* Watermark */}
+      {logoBuffer && (
+        <View style={styles.watermarkContainer}>
+          <Image src={logoBuffer} style={styles.watermarkImage} />
+        </View>
+      )}
+
       <View style={styles.header}>
         <Text style={{ fontSize: 12, marginBottom: 5 }}>Republic of the Philippines</Text>
         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>BARANGAY NEXUS</Text>
@@ -140,8 +160,21 @@ export async function POST(
     const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
     // 5. Generate PDF Stream
+    const logoPath = path.join(process.cwd(), 'public/images/brgy-seal.png');
+    let logoBuffer: Buffer | null = null;
+    try {
+      logoBuffer = fs.readFileSync(logoPath);
+    } catch (e) {
+      console.error('Failed to read logo file', e);
+    }
+
     const stream = await renderToStream(
-      <Certificate req={docReq} qrDataUrl={qrDataUrl} docNumber={issuedDoc.documentNumber} />
+      <Certificate 
+        req={docReq} 
+        qrDataUrl={qrDataUrl} 
+        docNumber={issuedDoc.documentNumber} 
+        logoBuffer={logoBuffer}
+      />
     );
 
     // 6. Return standard Web Response Stream
