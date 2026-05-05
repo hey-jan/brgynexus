@@ -94,7 +94,9 @@ model DocumentRequest {
   documentId String
   document   Document        @relation(fields: [documentId], references: [id])
   purpose    String
+  translatedPurpose String?
   status     RequestStatus   @default(PENDING)
+  source     String?         @default("WEB") // WEB, KIOSK, etc.
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

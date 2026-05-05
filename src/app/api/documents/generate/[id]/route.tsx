@@ -52,7 +52,7 @@ const Certificate = ({ req, qrDataUrl, docNumber, logoBuffer }: { req: any, qrDa
       <View style={styles.header}>
         <Text style={{ fontSize: 12, marginBottom: 5 }}>Republic of the Philippines</Text>
         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>BARANGAY NEXUS</Text>
-        <Text style={{ fontSize: 12 }}>City of Manila</Text>
+        <Text style={{ fontSize: 12 }}>City of Cebu</Text>
       </View>
       
       <Text style={styles.title}>{req.document.name.toUpperCase()}</Text>
@@ -61,14 +61,14 @@ const Certificate = ({ req, qrDataUrl, docNumber, logoBuffer }: { req: any, qrDa
         <Text style={{ marginBottom: 20 }}>TO WHOM IT MAY CONCERN:</Text>
         <Text style={{ marginBottom: 20 }}>
           This is to certify that {req.resident.user.firstName.toUpperCase()} {req.resident.user.lastName.toUpperCase()}, 
-          of legal age, {req.resident.civilStatus}, {req.resident.gender}, and a bona fide resident of 
+          of legal age, {req.resident.civilStatus}, {req.resident.gender}, and a bona fide resident of{" "}
           {req.resident.address}, is known to me to be of good moral character.
         </Text>
         <Text style={{ marginBottom: 20 }}>
           This certification is being issued upon the request of the interested party for:
         </Text>
         <Text style={{ fontWeight: 'bold', marginBottom: 20, textAlign: 'center' }}>
-          {req.purpose}
+          {req.translatedPurpose || req.purpose}
         </Text>
         <Text>
           Issued this {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })} at Barangay Nexus.
@@ -155,6 +155,7 @@ export async function POST(
       });
 
       // 3.1 Send Email Notification
+      /*
       await sendEmail({
         to: docReq.resident.user.email,
         subject: `Document Ready: ${docReq.document.name}`,
@@ -167,6 +168,7 @@ export async function POST(
           />
         )
       });
+      */
     }
 
     // 4. Generate QR Code

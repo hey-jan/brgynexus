@@ -1,116 +1,109 @@
 # Barangay Interview Guide: BrgyNexus
 **Date:** ____________________
 **Interviewer:** ____________________
-**Interviewee:** ____________________ (Name & Position)
+**Interviewee:** ____________________ (Position: ____________________)
 
 ---
 
-### PART 1: Understanding the Current System (Opening)
-*Goal: Understand how they work today.*
+### PART 1: Operations & Scale
+*Goal: Understand the daily workload and staffing bottlenecks.*
 
-**1.1 Current Workflow**
-*   How do residents currently request documents?
-    *   *Notes:* ___________________________________________________________
-*   Can you walk me through the step-by-step process from request to release?
-    *   *Notes:* ___________________________________________________________
-*   Do documents need physical signatures from officials before release?
-    *   *Notes:* ___________________________________________________________
-*   How do you notify residents when their document is ready?
-    *   *Notes:* ___________________________________________________________
+**1.1 Volume & Demand**
+*   How many document requests do you process daily/weekly? ___________________
+*   When are the Peak Seasons (e.g., school enrollment, elections)? ___________________
+*   Which 3 documents are requested most frequently? ___________________
+*   **Behavior:** Do most residents walk in themselves, or send someone else? ___________________
+*   **Digital Comfort:** Are residents generally comfortable using smartphones for services? ___________________
 
-**1.2 Current Pain Points**
-*   What is the most frustrating or slowest part of the manual process?
-    *   *Notes:* ___________________________________________________________
-*   Are you currently using any digital tools to help?
-    *   *Notes:* ___________________________________________________________
+**1.2 Staffing Roles**
+*   Who receives the request, who prepares the file, and who is the final signer? ___________________
+*   **Signatures:** Would a scanned electronic signature (printed automatically) be legally acceptable, or is a wet pen signature strictly required? ___________________
+*   Can one person handle the entire flow if others are away? ___________________
 
 ---
 
-### PART 2: Document & Resident Specifics
-*Goal: Validate the database fields (Prisma schema).*
+### PART 2: Document Workflow & Logic
+*Goal: Map the system states and database logic.*
 
-**2.1 Document Checklist & Requirements**
-(Check which are issued and what the staff-defined requirements are)
-*   [ ] **Barangay Clearance** | Req: _________________________________________
-*   [ ] **Cert. of Residency** | Req: _________________________________________
-*   [ ] **Cert. of Indigency** | Req: _________________________________________
-*   [ ] **Cert. of Good Moral** | Req: _________________________________________
-*   [ ] **Jobseeker Cert (RA 11261)** | Req: ____________________________________
-*   [ ] **Business Clearance** | Req: _________________________________________
-*   [ ] **Solo Parent Cert** | Req: _________________________________________
-*   [ ] **Barangay ID** | Req: _________________________________________
-*   [ ] **Other:** ______________ | Req: _________________________________________
+**2.1 Request Lifecycle & Timing**
+*   What are the exact stages a request goes through? (e.g., Pending → Processing → Released) ___________________
+*   **Turnaround Time:** What is the average processing time per document type? (mins/hrs/days) ___________________
+*   What are the top 3 reasons you reject a request? ___________________
+*   How long is a document valid once issued? (Expiration periods) ___________________
 
-**2.2 Verification & Residency**
-*   How do you verify if someone is a legitimate resident?
-    *   *Notes:* ___________________________________________________________
-*   What must a resident provide to be marked as verified in a system?
-    *   *Notes:* ___________________________________________________________
+**2.2 Verification & Identity**
+*   How do you verify residency? (e.g., ID, 6-month stay rule, Cedula) ___________________
+*   **Master List:** Do you have an existing master list/database of residents? ___________________
+*   **Duplicates:** How do you handle residents with the same name? Do they have unique IDs? ___________________
 
-**2.3 Payments & Fees**
-*   How are fees collected?
-    *   *Notes:* ___________________________________________________________
-*   Should residents pay before processing starts or upon pickup?
-    *   *Notes:* ___________________________________________________________
+**2.3 Document Customization**
+*   Do formats change based on purpose? ___________________
+*   Are templates fixed, or are they manually edited for every resident? ___________________
 
 ---
 
-### PART 3: Validating the BrgyNexus Concept
-*Goal: Get their input on the new system.*
+### PART 3: Finance & Reporting
+*Goal: Identify revenue tracking and automated reporting needs.*
 
-**3.1 The Idea**
-*   What if there was a kiosk or mobile app for requests—would that be helpful?
-    *   *Notes:* ___________________________________________________________
-*   Would you prefer a physical kiosk at the hall, a mobile app, or both?
-    *   *Notes:* ___________________________________________________________
-*   What specific features would you want to see in the dashboard?
-    *   *Notes:* ___________________________________________________________
+**3.1 Payments & Receipts**
+*   Current payment methods: [ ] Cash [ ] GCash [ ] Other: ___________________
+*   Do you issue manual Official Receipts (OR)? Should the system track OR numbers? ___________________
 
-**3.2 Future Scope**
-*   Would you want to manage Blotters, News Announcements, or Health Records here later?
-    *   *Notes:* ___________________________________________________________
+**3.2 Reporting Needs**
+*   What manual reports take the most time to prepare? ___________________
+*   Would a dashboard showing Revenue per Month or Daily Requests be useful? ___________________
 
 ---
 
-### PART 4: Technical & Operational Readiness
-*Goal: Can they actually support the system?*
+### PART 4: Infrastructure & Edge Cases
+*Goal: Risk management and physical deployment.*
 
-**4.1 Infrastructure**
-*   Do you have stable internet and functional computers here?
-    *   *Notes:* ___________________________________________________________
-*   Who would be the primary person operating the system daily?
-    *   *Notes:* ___________________________________________________________
-*   How much training time would the staff need for a new system?
-    *   *Notes:* ___________________________________________________________
+**4.1 Tech & Space**
+*   Is there physical space and a power outlet for a resident-facing kiosk? ___________________
+*   Is the internet/electricity stable enough for a 100% digital system? ___________________
 
-**4.2 Approval & Decision-Making**
-*   Who has the final say on implementing this system?
-    *   *Notes:* ___________________________________________________________
-*   Is there an existing budget for digitalization or office improvements?
-    *   *Notes:* ___________________________________________________________
+**4.2 Failure Scenarios**
+*   How do you handle Urgent requests or Captain is out of town scenarios? ___________________
+*   What is your Plan B if the system or internet goes down for a day? ___________________
 
 ---
 
-### PART 5: Project Details & Legal (Closing)
-*Goal: Tie up loose ends.*
+### PART 5: Privacy & Resistance
+*Goal: Compliance and user adoption.*
 
-**5.1 Common Resident FAQs (For our help section)**
-*   How long does it typically take to process a document? ______________________
-*   Can residents request for someone else? ______________________
-*   What are the most common questions residents ask you? ______________________
-
-**5.2 Data & Legal**
-*   Who is officially allowed to see resident data? ______________________________
-*   How long must we keep request records for auditing? __________________________
-*   Would digital signatures (Captain's image) be legally acceptable here? __________
+*   Are there specific sensitive records that should never be digitized? ___________________
+*   What is the biggest fear or concern about moving to a digital system? ___________________
 
 ---
 
-### ACTION ITEMS (To-Do)
-*   [ ] Request a sample of a printed Barangay Clearance/Indigency.
-*   [ ] Ask for a high-resolution file of the Barangay Seal (for the watermark).
-*   [ ] Check the physical logbook for hidden data columns.
-*   [ ] Take a photo of the office layout.
+### PART 6: Onboarding & Setup (IF APPROVED)
+*Goal: Collect data to initialize the system immediately.*
+
+**6.1 Official Barangay Info**
+*   **Official Office Address:** ________________________________________________
+*   **Operating Hours:** _______________________________________________________
+*   **Official Contact Number:** ________________________________________________
+*   **Official Email (if any):** ________________________________________________
+
+**6.2 User Accounts (Admin & Staff)**
+*Note: Collect info for the primary people who will use the system.*
+1.  **Name:** ____________________ | **Email:** ____________________ | **Role:** Admin
+2.  **Name:** ____________________ | **Email:** ____________________ | **Role:** Staff
+3.  **Name:** ____________________ | **Email:** ____________________ | **Role:** Staff
+
+**6.3 Official Signers**
+*List of people whose names/titles appear on documents (Captain, Secretary, etc.)*
+*   **Signer 1:** ____________________ | **Position:** ____________________
+*   **Signer 2:** ____________________ | **Position:** ____________________
+
+---
+
+### ACTION ITEMS (Quick Checklist)
+*   [ ] Get a sample of all printed documents (Check layout, watermark, and header styles).
+*   [ ] Ask for a high-resolution Barangay Seal file.
+*   [ ] Check the physical logbook for data columns we might have missed.
+*   [ ] Identify the best spot for a physical kiosk.
+*   [ ] **Finalize the "Officials" list for the document header.**
 
 ---
 *Generated by BrgyNexus AI*

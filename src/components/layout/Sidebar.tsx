@@ -44,6 +44,7 @@ export function Sidebar({ role, onMobileClose }: SidebarProps) {
     { href: "/staff/pending", label: "Pending Requests", icon: Clock },
     { href: "/staff/generate", label: "Generate Documents", icon: FileBadge },
     { href: "/staff/verify", label: "QR Verification", icon: QrCode },
+    { href: "/staff/reports", label: "Reports", icon: BarChart },
     { href: "/staff/profile", label: "Profile", icon: User },
   ];
 
@@ -52,6 +53,7 @@ export function Sidebar({ role, onMobileClose }: SidebarProps) {
     { href: "/admin/users", label: "User Management", icon: Users },
     { href: "/admin/requests", label: "All Requests", icon: FileText },
     { href: "/admin/analytics", label: "Analytics", icon: BarChart },
+    { href: "/admin/reports", label: "System Reports", icon: BarChart },
     { href: "/admin/logs", label: "System Logs", icon: ShieldAlert },
     { href: "/admin/settings", label: "Settings", icon: Settings },
     { href: "/admin/profile", label: "Profile", icon: User },
