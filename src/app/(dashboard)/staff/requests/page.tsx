@@ -5,8 +5,10 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function StaffRequestsPage() {
+  const router = useRouter();
   const [requests, setRequests] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [reviewModalOpen, setReviewModalOpen] = React.useState(false);
@@ -151,7 +153,7 @@ export default function StaffRequestsPage() {
                         {req.status === 'PENDING' ? 'Review & Process' : 'View Details'}
                       </Button>
                       {req.status === 'APPROVED' && (
-                        <Button size="sm" variant="default" onClick={() => updateStatus(req.id, 'RELEASED')}>Mark as Released</Button>
+                        <Button size="sm" variant="default" onClick={() => router.push('/staff/generate')}>Generate PDF</Button>
                       )}
                     </td>
                   </tr>

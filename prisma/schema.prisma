@@ -60,6 +60,7 @@ model User {
   statusLogs       RequestStatusLog[] @relation("ChangedBy")
   staffAssignments StaffAssignment[]
   auditLogs        AuditLog[]
+  announcements    Announcement[]
 }
 
 model ResidentProfile {
@@ -163,4 +164,15 @@ model AuditLog {
   action    String
   details   String?
   createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.Text
+  priority  String   @default("NORMAL") // NORMAL, HIGH, EMERGENCY
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

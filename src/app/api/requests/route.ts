@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
           residentId: profile.id,
           ...(statusFilter ? { status: statusFilter as any } : {})
         },
-        include: { document: true },
+        include: { document: true, issuedDocument: true },
         orderBy: { createdAt: 'desc' },
       });
     } else {
@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
         where: statusFilter ? { status: statusFilter as any } : undefined,
         include: { 
           document: true, 
-          resident: { include: { user: true } } 
+          resident: { include: { user: true } },
+          issuedDocument: true
         },
         orderBy: { createdAt: 'desc' },
       });

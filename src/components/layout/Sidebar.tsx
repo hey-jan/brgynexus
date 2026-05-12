@@ -16,6 +16,7 @@ import {
   BarChart, 
   Settings, 
   ShieldAlert,
+  Megaphone,
   X
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
@@ -44,6 +45,7 @@ export function Sidebar({ role, onMobileClose }: SidebarProps) {
     { href: "/staff/pending", label: "Pending Requests", icon: Clock },
     { href: "/staff/generate", label: "Generate Documents", icon: FileBadge },
     { href: "/staff/verify", label: "QR Verification", icon: QrCode },
+    { href: "/staff/announcements", label: "Announcements", icon: Megaphone },
     { href: "/staff/reports", label: "Reports", icon: BarChart },
     { href: "/staff/profile", label: "Profile", icon: User },
   ];

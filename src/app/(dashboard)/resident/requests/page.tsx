@@ -2,19 +2,44 @@
 
 import * as React from "react";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/Button";
+import { toast } from "sonner";
+import { CreditCard, Download } from "lucide-react";
 
 export default function MyRequestsPage() {
   const [requests, setRequests] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [processingId, setProcessingId] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
+  const fetchRequests = () => {
     fetch('/api/requests')
       .then(res => res.json())
       .then(data => {
         setRequests(data);
         setIsLoading(false);
       });
+  };
+
+  React.useEffect(() => {
+    fetchRequests();
   }, []);
+
+  const handlePayment = async (id: string) => {
+    setProcessingId(id);
+    try {
+      const res = await fetch(`/api/requests/${id}/pay`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Payment failed');
+      }
+      toast.success('Payment successful! Document is now ready for download.');
+      fetchRequests();
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch(status) {
@@ -63,11 +88,36 @@ export default function MyRequestsPage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
                       {req.status === 'PENDING' && <span className="text-yellow-600 dark:text-yellow-500 text-xs font-medium">Waiting for staff review</span>}
-                      {req.status === 'APPROVED' && <span className="text-blue-600 dark:text-blue-400 text-xs font-medium">Processing document...</span>}
+                      {req.status === 'APPROVED' && (
+                        <div className="space-y-2">
+                          <span className="text-blue-600 dark:text-blue-400 text-xs font-medium block">Approved. Pending payment.</span>
+                          <Button 
+                            size="sm" 
+                            onClick={() => handlePayment(req.id)}
+                            disabled={processingId === req.id}
+                            className="w-full text-xs"
+                          >
+                            <CreditCard className="w-3 h-3 mr-1" />
+                            {processingId === req.id ? 'Processing...' : 'Pay Online (Simulated)'}
+                          </Button>
+                        </div>
+                      )}
                       {req.status === 'RELEASED' && (
-                        <div className="bg-green-50 text-green-700 border border-green-200 p-2 rounded-md text-xs dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/50">
-                          <span className="font-bold block mb-1">Ready for Pickup!</span>
-                          Proceed to Barangay Hall to pay fee and claim your document.
+                        <div className="space-y-2">
+                          <span className="text-green-600 dark:text-green-400 text-xs font-medium block">Ready for Download!</span>
+                          {req.issuedDocument?.qrCodeHash ? (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="w-full text-xs border-green-200 text-green-700 hover:bg-green-50 dark:border-green-900 dark:text-green-400 dark:hover:bg-green-900/30"
+                              onClick={() => window.open(`/api/documents/${req.issuedDocument.qrCodeHash}/pdf`, '_blank')}
+                            >
+                              <Download className="w-3 h-3 mr-1" />
+                              Download E-Document
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-slate-500">Pick up at Barangay Hall</span>
+                          )}
                         </div>
                       )}
                       {req.status === 'REJECTED' && <span className="text-red-600 dark:text-red-400 text-xs font-medium">Request denied. Contact Barangay.</span>}
