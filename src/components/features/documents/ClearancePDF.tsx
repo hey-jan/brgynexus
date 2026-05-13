@@ -1,16 +1,38 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 
-// Create styles
 const styles = StyleSheet.create({
   page: {
-    padding: 50,
-    fontFamily: 'Helvetica',
+    paddingTop: 36,
+    paddingBottom: 50,
+    paddingHorizontal: 50,
+    fontFamily: 'Times-Roman',
   },
   header: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  headerLine: {
+    borderTopWidth: 2,
+    borderTopColor: '#000',
+    marginBottom: 30,
+    width: '100%',
+  },
+  logoContainer: {
+    width: 80,
     alignItems: 'center',
-    marginBottom: 40,
+    justifyContent: 'flex-start',
+  },
+  logo: {
+    width: 70,
+    height: 70,
+    objectFit: 'contain',
+  },
+  headerTextContainer: {
+    flex: 1,
+    alignItems: 'center',
+    paddingRight: 80, // Offset for logo to keep text centered
   },
   republicText: {
     fontSize: 10,
@@ -24,12 +46,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 10,
+    textTransform: 'uppercase',
   },
   officeText: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#1e3a8a', // Deep blue
+    marginBottom: 0,
+    color: '#000',
   },
   documentTitle: {
     fontSize: 24,
@@ -43,25 +66,33 @@ const styles = StyleSheet.create({
     lineHeight: 1.6,
     marginBottom: 20,
   },
-  bold: {
-    fontWeight: 'bold',
-  },
   footer: {
     marginTop: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   },
+  signatureContainer: {
+    alignItems: 'center',
+    width: 200,
+  },
+  signatureImage: {
+    width: 120,
+    height: 50,
+    objectFit: 'contain',
+    marginBottom: -10,
+  },
   signatureLine: {
     borderTopWidth: 1,
     borderTopColor: '#000',
     width: 200,
-    paddingTop: 5,
-    textAlign: 'center',
+    marginTop: 2,
+    marginBottom: 2,
   },
   signatureName: {
     fontSize: 12,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   signatureTitle: {
     fontSize: 10,
@@ -80,73 +111,96 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
-  docNo: {
+  watermarkContainer: {
     position: 'absolute',
-    top: 50,
-    right: 50,
-    fontSize: 10,
-    color: '#666',
+    top: '30%',
+    left: '15%',
+    width: '70%',
+    opacity: 0.15,
+  },
+  watermarkImage: {
+    width: '100%',
   }
 });
 
 interface ClearancePDFProps {
   documentName: string;
-  residentName: string;
-  address: string;
-  purpose: string;
   documentNumber: string;
   qrCodeDataUrl: string;
   issuedDate: Date;
+  bodyText: string;
+  settings: {
+    barangayName: string;
+    city: string;
+    province: string;
+    captainName: string;
+    captainTitle: string;
+    logoUrl?: any;
+    signatureUrl?: any;
+  };
 }
 
 export const ClearancePDF = ({
   documentName,
-  residentName,
-  address,
-  purpose,
   documentNumber,
   qrCodeDataUrl,
-  issuedDate
+  issuedDate,
+  bodyText,
+  settings
 }: ClearancePDFProps) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.docNo}>No. {documentNumber}</Text>
+      {/* Watermark Background Seal */}
+      {settings.logoUrl && (
+        <View style={styles.watermarkContainer}>
+          <Image src={settings.logoUrl} style={styles.watermarkImage} />
+        </View>
+      )}
       
       <View style={styles.header}>
-        <Text style={styles.republicText}>Republic of the Philippines</Text>
-        <Text style={styles.cityText}>City/Municipality</Text>
-        <Text style={styles.brgyText}>BARANGAY NEXUS</Text>
-        <Text style={styles.officeText}>OFFICE OF THE BARANGAY CAPTAIN</Text>
+        <View style={styles.logoContainer}>
+          {settings.logoUrl && (
+            <Image src={settings.logoUrl} style={styles.logo} />
+          )}
+        </View>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.republicText}>Republic of the Philippines</Text>
+          <Text style={styles.cityText}>{settings.province}</Text>
+          <Text style={styles.cityText}>{settings.city}</Text>
+          <Text style={styles.brgyText}>{settings.barangayName}</Text>
+          <Text style={styles.officeText}>OFFICE OF THE PUNONG BARANGAY</Text>
+        </View>
       </View>
+
+      <View style={styles.headerLine} />
 
       <Text style={styles.documentTitle}>{documentName}</Text>
 
       <View style={styles.body}>
         <Text>TO WHOM IT MAY CONCERN:</Text>
-        <Text style={{ marginTop: 10, marginBottom: 10 }}>
-          This is to certify that Mr./Ms. <Text style={styles.bold}>{residentName}</Text>, of legal age, 
-          is a bonafide resident of <Text style={styles.bold}>{address}</Text>, Barangay Nexus.
-        </Text>
-        <Text style={{ marginBottom: 10 }}>
-          Based on the records of this office, the above-named individual has no derogatory record or 
-          pending case filed against him/her in this barangay as of this date.
-        </Text>
-        <Text style={{ marginBottom: 10 }}>
-          This certification is being issued upon the request of the interested party for the following purpose:
-        </Text>
-        <Text style={[styles.bold, { textAlign: 'center', marginVertical: 10 }]}>{purpose}</Text>
+        
+        {/* Render body text with line breaks */}
+        <View style={{ marginTop: 20, marginBottom: 20 }}>
+          {bodyText.split('\n').map((line, i) => (
+            <Text key={i} style={{ minHeight: 12, marginBottom: 5 }}>{line}</Text>
+          ))}
+        </View>
+
         <Text>
-          Issued this {format(issuedDate, 'do')} day of {format(issuedDate, 'MMMM, yyyy')} at Barangay Nexus.
+          Issued this {format(issuedDate, 'do')} day of {format(issuedDate, 'MMMM, yyyy')} at {settings.barangayName}, {settings.city}.
         </Text>
       </View>
 
       <View style={styles.footer}>
-        <View>
-          <Text style={{ fontSize: 10, marginBottom: 20 }}>Issued by:</Text>
-          <View style={styles.signatureLine}>
-            <Text style={styles.signatureName}>HON. JUAN DELA CRUZ</Text>
-            <Text style={styles.signatureTitle}>Punong Barangay</Text>
-          </View>
+        <View style={styles.signatureContainer}>
+          {settings.signatureUrl ? (
+            <Image src={settings.signatureUrl} style={styles.signatureImage} />
+          ) : (
+            <View style={{ height: 50, marginBottom: 5 }} />
+          )}
+          <Text style={styles.signatureName}>{settings.captainName}</Text>
+          <View style={styles.signatureLine} />
+          <Text style={styles.signatureTitle}>{settings.captainTitle}</Text>
         </View>
         
         <View style={styles.qrContainer}>
@@ -158,7 +212,7 @@ export const ClearancePDF = ({
       
       <View style={{ position: 'absolute', bottom: 30, left: 50, right: 50, borderTop: 1, borderTopColor: '#ccc', paddingTop: 10 }}>
         <Text style={{ fontSize: 8, color: '#999', textAlign: 'center' }}>
-          This is a system-generated E-Document from BrgyNexus. 
+          This is a system-generated E-Document from {settings.barangayName}. 
           Valid only if the QR code can be verified successfully on the official portal.
         </Text>
       </View>

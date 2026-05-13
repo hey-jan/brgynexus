@@ -14,84 +14,8 @@ const secret = new TextEncoder().encode(
 );
 
 // Create styles for the PDF
-const styles = StyleSheet.create({
-  page: { padding: 50, fontFamily: 'Helvetica' },
-  header: { textAlign: 'center', marginBottom: 40 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
-  subtitle: { fontSize: 14, color: '#444', textAlign: 'center', marginBottom: 20 },
-  body: { fontSize: 12, lineHeight: 1.5, marginBottom: 40 },
-  signatureSection: { marginTop: 50, alignSelf: 'flex-end', textAlign: 'center' },
-  signatureLine: { borderTop: '1px solid #000', width: 200, paddingTop: 5, marginTop: 40 },
-  qrSection: { marginTop: 40, alignSelf: 'flex-start', alignItems: 'center' },
-  qrImage: { width: 100, height: 100 },
-  qrText: { fontSize: 8, marginTop: 5, color: '#666' },
-  watermarkContainer: {
-    position: 'absolute',
-    top: '30%',
-    left: '15%',
-    width: '70%',
-    opacity: 0.15,
-    zIndex: -1,
-  },
-  watermarkImage: {
-    width: '100%',
-  }
-});
-
-// React PDF Component
-const Certificate = ({ req, qrDataUrl, docNumber, logoBuffer }: { req: any, qrDataUrl: string, docNumber: string, logoBuffer: Buffer | null }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      {/* Watermark */}
-      {logoBuffer && (
-        <View style={styles.watermarkContainer}>
-          <Image src={logoBuffer} style={styles.watermarkImage} />
-        </View>
-      )}
-
-      <View style={styles.header}>
-        <Text style={{ fontSize: 12, marginBottom: 5 }}>Republic of the Philippines</Text>
-        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>BARANGAY NEXUS</Text>
-        <Text style={{ fontSize: 12 }}>City of Cebu</Text>
-      </View>
-      
-      <Text style={styles.title}>{req.document.name.toUpperCase()}</Text>
-      
-      <View style={styles.body}>
-        <Text style={{ marginBottom: 20 }}>TO WHOM IT MAY CONCERN:</Text>
-        <Text style={{ marginBottom: 20 }}>
-          This is to certify that {req.resident.user.firstName.toUpperCase()} {req.resident.user.lastName.toUpperCase()}, 
-          of legal age, {req.resident.civilStatus}, {req.resident.gender}, and a bona fide resident of{" "}
-          {req.resident.address}, is known to me to be of good moral character.
-        </Text>
-        <Text style={{ marginBottom: 20 }}>
-          This certification is being issued upon the request of the interested party for:
-        </Text>
-        <Text style={{ fontWeight: 'bold', marginBottom: 20, textAlign: 'center' }}>
-          {req.translatedPurpose || req.purpose}
-        </Text>
-        <Text>
-          Issued this {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })} at Barangay Nexus.
-        </Text>
-      </View>
-      
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={styles.qrSection}>
-          {qrDataUrl && <Image src={qrDataUrl} style={styles.qrImage} />}
-          <Text style={styles.qrText}>Scan to Verify</Text>
-          <Text style={styles.qrText}>Doc No: {docNumber}</Text>
-        </View>
-
-        <View style={styles.signatureSection}>
-          <View style={styles.signatureLine}>
-            <Text style={{ fontSize: 12, fontWeight: 'bold' }}>BARANGAY CAPTAIN</Text>
-            <Text style={{ fontSize: 10 }}>Punong Barangay</Text>
-          </View>
-        </View>
-      </View>
-    </Page>
-  </Document>
-);
+import { ClearancePDF } from '@/components/features/documents/ClearancePDF';
+import { format } from 'date-fns';
 
 export async function POST(
   request: Request,
@@ -178,21 +102,61 @@ export async function POST(
     const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
     // 5. Generate PDF Stream
-    const logoPath = path.join(process.cwd(), 'public/images/brgy-seal.png');
-    let logoBuffer: Buffer | null = null;
-    try {
-      logoBuffer = fs.readFileSync(logoPath);
-    } catch (e) {
-      console.error('Failed to read logo file', e);
+    let settings = await prisma.barangaySettings.findUnique({ where: { id: 'default' } });
+    if (!settings) {
+      settings = {
+        id: 'default',
+        barangayName: 'Barangay Nexus',
+        city: 'City/Municipality',
+        province: 'Province',
+        logoUrl: null,
+        captainName: 'Hon. Juan Dela Cruz',
+        captainTitle: 'Punong Barangay',
+        signatureUrl: null,
+        updatedAt: new Date()
+      };
     }
 
+    const resident = docReq.resident;
+    const documentData = docReq.document;
+    
+    // Parse template
+    let bodyText = documentData.templateContent || "This is to certify that Mr./Ms. {{residentName}}, of legal age, is a bonafide resident of {{address}}, Barangay Nexus.\n\nBased on the records of this office, the above-named individual has no derogatory record or pending case filed against him/her in this barangay as of this date.\n\nThis certification is being issued upon the request of the interested party for the following purpose:\n{{purpose}}";
+
+    bodyText = bodyText.replace(/{{residentName}}/g, `${resident.user.firstName} ${resident.user.lastName}`);
+    bodyText = bodyText.replace(/{{address}}/g, resident.address);
+    bodyText = bodyText.replace(/{{purpose}}/g, docReq.translatedPurpose || docReq.purpose);
+    bodyText = bodyText.replace(/{{date}}/g, format(issuedDoc.issuedDate || new Date(), 'MMMM d, yyyy'));
+
+    // Helper to process base64 image strings into Buffers for React PDF
+    const processImage = (dataUri: string | null | undefined) => {
+      if (!dataUri) return undefined;
+      if (typeof dataUri === 'string' && dataUri.startsWith('data:image')) {
+        const base64Data = dataUri.split(',')[1];
+        return Buffer.from(base64Data, 'base64');
+      }
+      return dataUri;
+    };
+
+    const pdfProps = {
+      documentName: documentData.name,
+      documentNumber: issuedDoc.documentNumber,
+      qrCodeDataUrl: qrDataUrl,
+      issuedDate: issuedDoc.issuedDate || new Date(),
+      bodyText,
+      settings: {
+        barangayName: settings.barangayName,
+        city: settings.city,
+        province: settings.province,
+        captainName: settings.captainName,
+        captainTitle: settings.captainTitle,
+        logoUrl: processImage(settings.logoUrl),
+        signatureUrl: processImage(settings.signatureUrl),
+      }
+    };
+
     const stream = await renderToStream(
-      <Certificate 
-        req={docReq} 
-        qrDataUrl={qrDataUrl} 
-        docNumber={issuedDoc.documentNumber} 
-        logoBuffer={logoBuffer}
-      />
+      <ClearancePDF {...pdfProps} />
     );
 
     // 6. Return standard Web Response Stream

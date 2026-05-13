@@ -17,6 +17,7 @@ import {
   Settings, 
   ShieldAlert,
   Megaphone,
+  FileCode,
   X
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
@@ -54,6 +55,7 @@ export function Sidebar({ role, onMobileClose }: SidebarProps) {
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/users", label: "User Management", icon: Users },
     { href: "/admin/requests", label: "All Requests", icon: FileText },
+    { href: "/admin/templates", label: "Document Templates", icon: FileCode },
     { href: "/admin/analytics", label: "Analytics", icon: BarChart },
     { href: "/admin/reports", label: "System Reports", icon: BarChart },
     { href: "/admin/logs", label: "System Logs", icon: ShieldAlert },

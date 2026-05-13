@@ -84,6 +84,7 @@ model Document {
   fee            Float   @default(0)
   processingDays Int     @default(1)
   isActive       Boolean @default(true)
+  templateContent String? @db.Text
 
   requests DocumentRequest[]
 }
@@ -175,4 +176,16 @@ model Announcement {
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model BarangaySettings {
+  id              String   @id @default("default")
+  barangayName    String   @default("Barangay Nexus")
+  city            String   @default("City/Municipality")
+  province        String   @default("Province")
+  logoUrl         String?  @db.Text
+  captainName     String   @default("Hon. Juan Dela Cruz")
+  captainTitle    String   @default("Punong Barangay")
+  signatureUrl    String?  @db.Text
+  updatedAt       DateTime @updatedAt
 }
