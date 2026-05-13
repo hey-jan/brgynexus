@@ -7,6 +7,15 @@ import { Check, X, FileText } from "lucide-react";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
 
+const STANDARD_PURPOSES = [
+  "Employment Requirement",
+  "Bank Requirement",
+  "School/Scholarship Requirement",
+  "Postal ID Application",
+  "Medical Assistance",
+  "Travel/Passport Requirement",
+];
+
 export default function PendingRequestsPage() {
   const [requests, setRequests] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -14,6 +23,8 @@ export default function PendingRequestsPage() {
   const [selectedRequest, setSelectedRequest] = React.useState<any>(null);
   const [translatedPurpose, setTranslatedPurpose] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const isCustomPurpose = selectedRequest ? !STANDARD_PURPOSES.includes(selectedRequest.purpose) : false;
 
   const fetchRequests = async () => {
     try {
@@ -67,7 +78,7 @@ export default function PendingRequestsPage() {
   };
 
   const handleApprove = async () => {
-    if (translatedPurpose !== selectedRequest.translatedPurpose) {
+    if (isCustomPurpose && translatedPurpose !== selectedRequest.translatedPurpose) {
       const saved = await saveTranslatedPurpose(false);
       if (!saved) return;
     }
@@ -76,7 +87,7 @@ export default function PendingRequestsPage() {
   };
 
   const handleReject = async () => {
-    if (translatedPurpose !== selectedRequest.translatedPurpose) {
+    if (isCustomPurpose && translatedPurpose !== selectedRequest.translatedPurpose) {
       const saved = await saveTranslatedPurpose(false);
       if (!saved) return;
     }
@@ -188,23 +199,27 @@ export default function PendingRequestsPage() {
                   {selectedRequest.purpose}
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Official Purpose</label>
-                <Textarea 
-                  value={translatedPurpose}
-                  onChange={(e) => setTranslatedPurpose(e.target.value)}
-                  placeholder="Translate or formalize the purpose here..."
-                  className="w-full min-h-[100px]"
-                  disabled={isSubmitting || (selectedRequest.status !== 'PENDING' && selectedRequest.status !== 'APPROVED')}
-                />
-              </div>
+              {isCustomPurpose && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Official Purpose</label>
+                  <Textarea 
+                    value={translatedPurpose}
+                    onChange={(e) => setTranslatedPurpose(e.target.value)}
+                    placeholder="Translate or formalize the purpose here..."
+                    className="w-full min-h-[100px]"
+                    disabled={isSubmitting || (selectedRequest.status !== 'PENDING' && selectedRequest.status !== 'APPROVED')}
+                  />
+                </div>
+              )}
             </div>
             <div className="p-6 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
               <Button variant="outline" onClick={closeReviewModal}>Cancel</Button>
               <div className="space-x-2 flex">
-                <Button variant="outline" onClick={() => { saveTranslatedPurpose(); closeReviewModal(); }} disabled={isSubmitting}>
-                  Save Draft
-                </Button>
+                {isCustomPurpose && (
+                  <Button variant="outline" onClick={() => { saveTranslatedPurpose(); closeReviewModal(); }} disabled={isSubmitting}>
+                    Save Draft
+                  </Button>
+                )}
                 <Button variant="outline" className="border-red-200 text-red-700 hover:bg-red-50" onClick={handleReject} disabled={isSubmitting}>
                   Reject
                 </Button>

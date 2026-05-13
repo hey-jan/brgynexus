@@ -6,10 +6,21 @@ import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
 
+const STANDARD_PURPOSES = [
+  "Employment Requirement",
+  "Bank Requirement",
+  "School/Scholarship Requirement",
+  "Postal ID Application",
+  "Medical Assistance",
+  "Travel/Passport Requirement",
+  "Others"
+];
+
 export default function RequestDocumentPage() {
   const router = useRouter();
   const [documents, setDocuments] = React.useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [purposeType, setPurposeType] = React.useState("");
 
   React.useEffect(() => {
     fetch('/api/documents')
@@ -26,10 +37,26 @@ export default function RequestDocumentPage() {
       const formData = new FormData(e.currentTarget);
       const data = Object.fromEntries(formData.entries());
       
+      let finalPurpose = data.purposeType;
+      if (data.purposeType === "Others") {
+        finalPurpose = data.customPurpose;
+      }
+      
+      if (!finalPurpose || finalPurpose.toString().trim() === "") {
+        toast.error("Please specify a purpose for your request.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const payload = {
+        documentId: data.documentId,
+        purpose: finalPurpose,
+      };
+      
       const response = await fetch('/api/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) throw new Error("Failed to submit request");
@@ -70,17 +97,38 @@ export default function RequestDocumentPage() {
           </div>
 
           <div>
-            <label htmlFor="purpose" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label htmlFor="purposeType" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Purpose of Request
             </label>
-            <Textarea 
-              id="purpose" 
-              name="purpose" 
-              rows={4} 
-              required 
-              placeholder="Please explain why you need this document..." 
-            />
+            <select 
+              id="purposeType" 
+              name="purposeType" 
+              required
+              value={purposeType}
+              onChange={(e) => setPurposeType(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+            >
+              <option value="">Select a purpose...</option>
+              {STANDARD_PURPOSES.map(purpose => (
+                <option key={purpose} value={purpose}>{purpose}</option>
+              ))}
+            </select>
           </div>
+
+          {purposeType === "Others" && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <label htmlFor="customPurpose" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Please specify your purpose
+              </label>
+              <Textarea 
+                id="customPurpose" 
+                name="customPurpose" 
+                rows={3} 
+                required 
+                placeholder="Briefly explain why you need this document..." 
+              />
+            </div>
+          )}
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Request"}

@@ -22,6 +22,15 @@ interface Resident {
   address: string;
 }
 
+const STANDARD_PURPOSES = [
+  "Employment Requirement",
+  "Bank Requirement",
+  "School/Scholarship Requirement",
+  "Postal ID Application",
+  "Medical Assistance",
+  "Travel/Passport Requirement",
+];
+
 export default function RequestFlow() {
   const [step, setStep] = useState<Step>("search");
   const [loading, setLoading] = useState(false);
@@ -31,6 +40,7 @@ export default function RequestFlow() {
   const [searchData, setSearchData] = useState({ firstName: "", lastName: "" });
   const [resident, setResident] = useState<Resident | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
+  const [purposeType, setPurposeType] = useState("");
   const [purpose, setPurpose] = useState("");
   const [referenceNo, setReferenceNo] = useState("");
 
@@ -73,7 +83,15 @@ export default function RequestFlow() {
   };
 
   const handleSubmit = async () => {
-    if (!resident || !selectedDoc || !purpose) return;
+    let finalPurpose = purposeType;
+    if (purposeType === "Others") {
+      finalPurpose = purpose;
+    }
+    
+    if (!resident || !selectedDoc || !finalPurpose) {
+      toast.error("Please specify a purpose");
+      return;
+    }
     
     setLoading(true);
     try {
@@ -83,7 +101,7 @@ export default function RequestFlow() {
         body: JSON.stringify({
           residentId: resident.id,
           documentId: selectedDoc.id,
-          purpose,
+          purpose: finalPurpose,
           source: "kiosk" // Tagging the source
         }),
       });
@@ -212,14 +230,39 @@ export default function RequestFlow() {
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-white/20 relative z-10">
-              <textarea 
-                className="w-full text-2xl p-6 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-medium min-h-[250px] resize-none"
-                placeholder="e.g. Employment, Scholarship Application, Local ID Requirement"
-                value={purpose}
-                onChange={e => setPurpose(e.target.value)}
-              />
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                {STANDARD_PURPOSES.map(p => (
+                  <KioskButton
+                    key={p}
+                    variant={purposeType === p ? "primary" : "secondary"}
+                    onClick={() => setPurposeType(p)}
+                    className="h-auto p-4 text-lg min-h-[100px]"
+                  >
+                    {p}
+                  </KioskButton>
+                ))}
+                <KioskButton
+                  variant={purposeType === "Others" ? "primary" : "secondary"}
+                  onClick={() => setPurposeType("Others")}
+                  className="h-auto p-4 text-lg min-h-[100px]"
+                >
+                  Others (Type manually)
+                </KioskButton>
+              </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-8">
+              {purposeType === "Others" && (
+                <motion.textarea 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="w-full text-2xl p-6 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-medium min-h-[200px] resize-none mb-4"
+                  placeholder="Type your specific purpose here..."
+                  value={purpose}
+                  onChange={e => setPurpose(e.target.value)}
+                />
+              )}
+
+              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-white/10">
                 <KioskButton 
                   variant="secondary" 
                   size="lg" 
@@ -229,7 +272,7 @@ export default function RequestFlow() {
                   Go Back
                 </KioskButton>
                 <KioskButton 
-                  disabled={!purpose || loading} 
+                  disabled={!purposeType || (purposeType === "Others" && !purpose) || loading} 
                   onClick={handleSubmit}
                   className="h-24 text-2xl"
                 >

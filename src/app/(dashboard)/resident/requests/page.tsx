@@ -32,7 +32,7 @@ export default function MyRequestsPage() {
         const data = await res.json();
         throw new Error(data.error || 'Payment failed');
       }
-      toast.success('Payment successful! Document is now ready for download.');
+      toast.success('Payment successful! Document is now ready for pickup at the Barangay Hall.');
       fetchRequests();
     } catch (error: any) {
       toast.error(error.message);
@@ -104,20 +104,8 @@ export default function MyRequestsPage() {
                       )}
                       {req.status === 'RELEASED' && (
                         <div className="space-y-2">
-                          <span className="text-green-600 dark:text-green-400 text-xs font-medium block">Ready for Download!</span>
-                          {req.issuedDocument?.qrCodeHash ? (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              className="w-full text-xs border-green-200 text-green-700 hover:bg-green-50 dark:border-green-900 dark:text-green-400 dark:hover:bg-green-900/30"
-                              onClick={() => window.open(`/api/documents/${req.issuedDocument.qrCodeHash}/pdf`, '_blank')}
-                            >
-                              <Download className="w-3 h-3 mr-1" />
-                              Download E-Document
-                            </Button>
-                          ) : (
-                            <span className="text-xs text-slate-500">Pick up at Barangay Hall</span>
-                          )}
+                          <span className="text-green-600 dark:text-green-400 text-xs font-medium block">Ready for Pickup!</span>
+                          <span className="text-xs text-slate-500 font-medium">Please proceed to the Barangay Hall to claim your document.</span>
                         </div>
                       )}
                       {req.status === 'REJECTED' && <span className="text-red-600 dark:text-red-400 text-xs font-medium">Request denied. Contact Barangay.</span>}
