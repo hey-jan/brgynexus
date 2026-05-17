@@ -6,6 +6,7 @@ import { UserPlus, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { VirtualKeyboard } from "@/components/ui/VirtualKeyboard";
 
 export default function KioskRegister() {
   const router = useRouter();
@@ -21,6 +22,25 @@ export default function KioskRegister() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Keyboard state
+  const [activeInput, setActiveInput] = useState<string | null>(null);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  const handleKeyboardChange = (value: string) => {
+    if (activeInput === "firstName") setFormData({ ...formData, firstName: value.toUpperCase() });
+    if (activeInput === "lastName") setFormData({ ...formData, lastName: value.toUpperCase() });
+    if (activeInput === "email") setFormData({ ...formData, email: value });
+    if (activeInput === "password") setFormData({ ...formData, password: value });
+  };
+
+  const getKeyboardValue = () => {
+    if (activeInput === "firstName") return formData.firstName;
+    if (activeInput === "lastName") return formData.lastName;
+    if (activeInput === "email") return formData.email;
+    if (activeInput === "password") return formData.password;
+    return "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,9 +95,10 @@ export default function KioskRegister() {
                     name="firstName"
                     type="text"
                     className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-bold uppercase"
-                    placeholder="e.g. JUAN"
+
                     value={formData.firstName}
                     onChange={(e) => setFormData({...formData, firstName: e.target.value.toUpperCase()})}
+                    onFocus={() => { setActiveInput("firstName"); setKeyboardOpen(true); }}
                   />
                 </div>
                 <div className="space-y-3">
@@ -87,9 +108,10 @@ export default function KioskRegister() {
                     name="lastName"
                     type="text"
                     className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-bold uppercase"
-                    placeholder="e.g. DELA CRUZ"
+
                     value={formData.lastName}
                     onChange={(e) => setFormData({...formData, lastName: e.target.value.toUpperCase()})}
+                    onFocus={() => { setActiveInput("lastName"); setKeyboardOpen(true); }}
                   />
                 </div>
               </div>
@@ -101,9 +123,10 @@ export default function KioskRegister() {
                   name="email"
                   type="email"
                   className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-medium"
-                  placeholder="e.g. juan@example.com"
+
                   value={formData.email}
                   onChange={handleChange}
+                  onFocus={() => { setActiveInput("email"); setKeyboardOpen(true); }}
                 />
               </div>
 
@@ -114,9 +137,10 @@ export default function KioskRegister() {
                   name="password"
                   type="password"
                   className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-medium tracking-widest"
-                  placeholder="Enter a secure PIN or password"
+
                   value={formData.password}
                   onChange={handleChange}
+                  onFocus={() => { setActiveInput("password"); setKeyboardOpen(true); }}
                 />
               </div>
 
@@ -179,6 +203,13 @@ export default function KioskRegister() {
           </motion.div>
         )}
       </AnimatePresence>
+      <VirtualKeyboard 
+        inputName={activeInput || ""} 
+        inputValue={getKeyboardValue()} 
+        onChange={handleKeyboardChange}
+        isOpen={keyboardOpen}
+        onClose={() => { setKeyboardOpen(false); setActiveInput(null); }}
+      />
     </div>
   );
 }

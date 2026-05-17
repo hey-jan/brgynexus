@@ -6,11 +6,20 @@ import { Search, Loader2, CheckCircle2, Clock, XCircle, FileCheck } from "lucide
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { VirtualKeyboard } from "@/components/ui/VirtualKeyboard";
 
 export default function CheckStatus() {
   const [refNo, setRefNo] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+
+  // Keyboard state
+  const [activeInput, setActiveInput] = useState<string | null>(null);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  const handleKeyboardChange = (val: string) => {
+    setRefNo(val);
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +27,6 @@ export default function CheckStatus() {
     
     setLoading(true);
     try {
-      // Assuming the backend supports searching by ID prefix or full ID
       const res = await fetch(`/api/requests/${refNo}`);
       const data = await res.json();
       
@@ -75,7 +83,7 @@ export default function CheckStatus() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto py-10 space-y-12 relative z-10">
+    <div className={`w-full max-w-3xl mx-auto py-10 pb-${keyboardOpen ? '80' : '0'} transition-all duration-300 relative z-10`}>
       <div className="text-center space-y-4 mb-8">
         <h2 className="text-5xl font-black text-white tracking-tight drop-shadow-md">Check Status</h2>
         <p className="text-xl text-blue-200 font-medium leading-relaxed drop-shadow-sm">
@@ -89,10 +97,11 @@ export default function CheckStatus() {
             required
             type="text"
             className="w-full text-4xl p-8 rounded-[2rem] border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-black text-center tracking-[0.4em] uppercase"
-            placeholder="E.G. AB12CD34"
             value={refNo}
             onChange={e => setRefNo(e.target.value.toUpperCase())}
+            onFocus={() => { setActiveInput("refNo"); setKeyboardOpen(true); }}
             maxLength={8}
+            placeholder="REF NUMBER"
           />
         </div>
 
@@ -130,6 +139,14 @@ export default function CheckStatus() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <VirtualKeyboard 
+        inputName={activeInput || ""} 
+        inputValue={refNo} 
+        onChange={handleKeyboardChange}
+        isOpen={keyboardOpen}
+        onClose={() => { setKeyboardOpen(false); setActiveInput(null); }}
+      />
     </div>
   );
 }

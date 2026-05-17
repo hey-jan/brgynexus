@@ -57,13 +57,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     });
 
     const resident = issuedDoc.request.resident;
+    const guestName = issuedDoc.request.guestName;
+    const guestAddress = issuedDoc.request.guestAddress;
     const documentData = issuedDoc.request.document;
+    
+    let residentName = "Unknown";
+    let address = "Unknown";
+    
+    if (resident) {
+      residentName = `${resident.user.firstName} ${resident.user.lastName}`;
+      address = resident.address;
+    } else if (guestName) {
+      residentName = guestName;
+      address = guestAddress || "Unknown";
+    }
     
     // Parse template
     let bodyText = documentData.templateContent || "This is to certify that Mr./Ms. {{residentName}}, of legal age, is a bonafide resident of {{address}}, Barangay Nexus.\n\nBased on the records of this office, the above-named individual has no derogatory record or pending case filed against him/her in this barangay as of this date.\n\nThis certification is being issued upon the request of the interested party for the following purpose:\n{{purpose}}";
 
-    bodyText = bodyText.replace(/{{residentName}}/g, `${resident.user.firstName} ${resident.user.lastName}`);
-    bodyText = bodyText.replace(/{{address}}/g, resident.address);
+    bodyText = bodyText.replace(/{{residentName}}/g, residentName);
+    bodyText = bodyText.replace(/{{address}}/g, address);
     bodyText = bodyText.replace(/{{purpose}}/g, issuedDoc.request.translatedPurpose || issuedDoc.request.purpose);
     bodyText = bodyText.replace(/{{date}}/g, format(issuedDoc.issuedDate, 'MMMM d, yyyy'));
 

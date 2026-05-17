@@ -48,7 +48,9 @@ export default async function VerifyPage({ params }: { params: Promise<{ hash: s
     );
   }
 
-  const resName = `${document.request.resident.user.firstName} ${document.request.resident.user.lastName}`;
+  const resName = document.request.resident 
+    ? `${document.request.resident.user.firstName} ${document.request.resident.user.lastName}`
+    : ((document.request as any).guestName || "Unknown Guest");
   const docName = document.request.document.name;
   
   return (

@@ -45,7 +45,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const body = await request.json();
-    const { status, remarks, translatedPurpose } = body;
+    const { status, remarks, translatedPurpose, proofPresented } = body;
 
     const updateData: any = {
       handledBy: { connect: { id: payload.userId as string } },
@@ -53,6 +53,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     if (translatedPurpose !== undefined) {
       updateData.translatedPurpose = translatedPurpose;
+    }
+
+    if (proofPresented !== undefined) {
+      updateData.proofPresented = proofPresented;
     }
 
     if (status) {
@@ -70,6 +74,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       where: { id },
       data: updateData,
     });
+
+    if (status === 'APPROVED') {
+      const existingReq = await prisma.documentRequest.findUnique({
+        where: { id },
+        include: { resident: true }
+      });
+      if (existingReq?.resident?.residentType === 'TEMPORARY' && !existingReq.resident.isVerified) {
+        await prisma.residentProfile.update({
+          where: { id: existingReq.residentId! },
+          data: { isVerified: true }
+        });
+      }
+    }
 
     return NextResponse.json(updatedRequest);
   } catch (error) {

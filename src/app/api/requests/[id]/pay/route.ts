@@ -36,7 +36,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Request not found' }, { status: 404 });
     }
 
-    if (docRequest.resident.userId !== payload.userId) {
+    if (docRequest.resident && docRequest.resident.userId !== payload.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

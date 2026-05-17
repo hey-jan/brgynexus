@@ -2,25 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import { KioskButton } from "@/components/ui/KioskButton";
-import { FileText, User, Calendar, ClipboardCheck, ArrowRight, CheckCircle2, Loader2, Search } from "lucide-react";
+import { FileText, User, ClipboardCheck, ArrowRight, CheckCircle2, Loader2, MapPin, Phone, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { VirtualKeyboard } from "@/components/ui/VirtualKeyboard";
 
-type Step = "search" | "document" | "purpose" | "success";
+type Step = "details" | "document" | "purpose" | "success";
 
 interface Document {
   id: string;
   name: string;
   description: string;
   fee: number;
-}
-
-interface Resident {
-  id: string;
-  name: string;
-  address: string;
 }
 
 const STANDARD_PURPOSES = [
@@ -32,14 +26,14 @@ const STANDARD_PURPOSES = [
   "Travel/Passport Requirement",
 ];
 
-export default function RequestFlow() {
-  const [step, setStep] = useState<Step>("search");
+export default function WalkInRequestFlow() {
+  const [step, setStep] = useState<Step>("details");
   const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   
   // Form State
-  const [searchData, setSearchData] = useState({ firstName: "", lastName: "" });
-  const [resident, setResident] = useState<Resident | null>(null);
+  const [guestData, setGuestData] = useState({ firstName: "", lastName: "", address: "", lengthOfStay: "", phone: "" });
+  const [temporaryResidentId, setTemporaryResidentId] = useState<string | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [purposeType, setPurposeType] = useState("");
   const [purpose, setPurpose] = useState("");
@@ -52,19 +46,24 @@ export default function RequestFlow() {
   const router = useRouter();
 
   const handleKeyboardChange = (value: string) => {
-    if (activeInput === "firstName") setSearchData({ ...searchData, firstName: value.toUpperCase() });
-    if (activeInput === "lastName") setSearchData({ ...searchData, lastName: value.toUpperCase() });
+    if (activeInput === "firstName") setGuestData({ ...guestData, firstName: value.toUpperCase() });
+    if (activeInput === "lastName") setGuestData({ ...guestData, lastName: value.toUpperCase() });
+    if (activeInput === "address") setGuestData({ ...guestData, address: value.toUpperCase() });
+    if (activeInput === "lengthOfStay") setGuestData({ ...guestData, lengthOfStay: value });
+    if (activeInput === "phone") setGuestData({ ...guestData, phone: value });
     if (activeInput === "purpose") setPurpose(value);
   };
 
   const getKeyboardValue = () => {
-    if (activeInput === "firstName") return searchData.firstName;
-    if (activeInput === "lastName") return searchData.lastName;
+    if (activeInput === "firstName") return guestData.firstName;
+    if (activeInput === "lastName") return guestData.lastName;
+    if (activeInput === "address") return guestData.address;
+    if (activeInput === "lengthOfStay") return guestData.lengthOfStay;
+    if (activeInput === "phone") return guestData.phone;
     if (activeInput === "purpose") return purpose;
     return "";
   };
 
-  // Fetch documents on mount
   useEffect(() => {
     fetch("/api/documents")
       .then(res => res.json())
@@ -72,21 +71,26 @@ export default function RequestFlow() {
       .catch(err => console.error("Failed to fetch documents", err));
   }, []);
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!guestData.firstName.trim() || !guestData.lastName.trim() || !guestData.address.trim()) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    
     setLoading(true);
     try {
-      const res = await fetch("/api/kiosk/search", {
+      const res = await fetch("/api/kiosk/temporary-resident", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(searchData),
+        body: JSON.stringify(guestData),
       });
       const data = await res.json();
       if (res.ok) {
-        setResident(data);
+        setTemporaryResidentId(data.id);
         setStep("document");
       } else {
-        toast.error(data.error || "Resident not found");
+        toast.error(data.error || "Failed to create temporary record");
       }
     } catch (err) {
       toast.error("An error occurred. Please try again.");
@@ -106,7 +110,7 @@ export default function RequestFlow() {
       finalPurpose = purpose;
     }
     
-    if (!resident || !selectedDoc || !finalPurpose) {
+    if (!selectedDoc || !finalPurpose || !temporaryResidentId) {
       toast.error("Please specify a purpose");
       return;
     }
@@ -117,10 +121,10 @@ export default function RequestFlow() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          residentId: resident.id,
+          residentId: temporaryResidentId,
           documentId: selectedDoc.id,
           purpose: finalPurpose,
-          source: "kiosk" // Tagging the source
+          source: "kiosk"
         }),
       });
       
@@ -140,52 +144,97 @@ export default function RequestFlow() {
 
   const renderStep = () => {
     switch (step) {
-      case "search":
+      case "details":
         return (
           <motion.div 
             initial={{ opacity: 0, x: 20 }} 
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="w-full max-w-2xl mx-auto space-y-12"
+            className="w-full max-w-3xl mx-auto space-y-8 py-4"
           >
             <div className="text-center space-y-4">
-              <div className="w-24 h-24 bg-white/10 text-blue-300 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner border border-white/20">
-                <User size={48} />
-              </div>
-              <h2 className="text-5xl font-black text-white drop-shadow-md">Identity Verification</h2>
-              <p className="text-xl text-blue-200 font-medium drop-shadow-sm">Please enter your details exactly as they appear on your records.</p>
+              <h2 className="text-5xl font-black text-white drop-shadow-md">Walk-in Registration</h2>
+              <p className="text-xl text-blue-200 font-medium drop-shadow-sm">Please provide your details to create a temporary record.</p>
             </div>
 
-            <form onSubmit={handleSearch} className="space-y-6 bg-white/10 backdrop-blur-md p-10 rounded-[2.5rem] shadow-xl border border-white/20">
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">First Name</label>
-                  <input 
-                    required
-                    type="text"
-                    className="w-full text-2xl p-6 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
-                    value={searchData.firstName}
-                    onChange={e => setSearchData({...searchData, firstName: e.target.value.toUpperCase()})}
-                    onFocus={() => { setActiveInput("firstName"); setKeyboardOpen(true); }}
-                  />
+            <form onSubmit={handleDetailsSubmit} className="space-y-6 bg-white/10 backdrop-blur-md p-10 rounded-[2.5rem] shadow-xl border border-white/20">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-blue-300 ml-2">First Name *</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
+                    <input 
+                      required
+                      type="text"
+                      className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
+                      value={guestData.firstName}
+                      onChange={e => setGuestData({...guestData, firstName: e.target.value.toUpperCase()})}
+                      onFocus={() => { setActiveInput("firstName"); setKeyboardOpen(true); }}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">Last Name</label>
-                  <input 
-                    required
-                    type="text"
-                    className="w-full text-2xl p-6 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
-                    value={searchData.lastName}
-                    onChange={e => setSearchData({...searchData, lastName: e.target.value.toUpperCase()})}
-                    onFocus={() => { setActiveInput("lastName"); setKeyboardOpen(true); }}
-                  />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-blue-300 ml-2">Last Name *</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
+                    <input 
+                      required
+                      type="text"
+                      className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
+                      value={guestData.lastName}
+                      onChange={e => setGuestData({...guestData, lastName: e.target.value.toUpperCase()})}
+                      onFocus={() => { setActiveInput("lastName"); setKeyboardOpen(true); }}
+                    />
+                  </div>
                 </div>
               </div>
               
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-blue-300 ml-2">Current Address *</label>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
+                  <input 
+                    required
+                    type="text"
+                    className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-medium"
+                    value={guestData.address}
+                    onChange={e => setGuestData({...guestData, address: e.target.value.toUpperCase()})}
+                    onFocus={() => { setActiveInput("address"); setKeyboardOpen(true); }}
+                  />
+                </div>
+              </div>
 
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-blue-300 ml-2">Length of Stay (Optional)</label>
+                  <div className="relative">
+                    <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
+                    <input 
+                      type="text"
+                      className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
+                      value={guestData.lengthOfStay}
+                      onChange={e => setGuestData({...guestData, lengthOfStay: e.target.value})}
+                      onFocus={() => { setActiveInput("lengthOfStay"); setKeyboardOpen(true); }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-blue-300 ml-2">Contact No. (Optional)</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
+                    <input 
+                      type="text"
+                      className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
+                      value={guestData.phone}
+                      onChange={e => setGuestData({...guestData, phone: e.target.value})}
+                      onFocus={() => { setActiveInput("phone"); setKeyboardOpen(true); }}
+                    />
+                  </div>
+                </div>
+              </div>
 
-              <KioskButton type="submit" disabled={loading} className="mt-12 h-24 text-4xl">
-                {loading ? <Loader2 className="animate-spin" size={48} /> : "Search Profile"}
+              <KioskButton type="submit" disabled={loading} className="mt-8 h-20 text-2xl w-full">
+                {loading ? <Loader2 className="animate-spin" size={32} /> : "Register & Proceed"}
               </KioskButton>
             </form>
           </motion.div>
@@ -200,7 +249,7 @@ export default function RequestFlow() {
             className="w-full max-w-5xl mx-auto space-y-12"
           >
             <div className="text-center space-y-4 mb-8">
-              <h2 className="text-4xl font-black text-white drop-shadow-md">Welcome, {resident?.name}</h2>
+              <h2 className="text-4xl font-black text-white drop-shadow-md">Welcome, {guestData.firstName}</h2>
               <p className="text-xl text-blue-200 font-medium drop-shadow-sm">Please select the document you require.</p>
             </div>
 
@@ -335,10 +384,10 @@ export default function RequestFlow() {
                 <div className="mt-1 text-amber-400"><ArrowRight size={32} /></div>
                 <div>
                   <p className="text-lg font-bold text-amber-300">
-                    Next Step: Physical Verification
+                    Next Step: Verification
                   </p>
                   <p className="text-base text-amber-200/80 font-medium">
-                    Please proceed to the Staff Window and present a Valid ID to confirm this request.
+                    Please proceed to the Staff Window and present a Valid ID or Lease Contract to verify your temporary residency.
                   </p>
                 </div>
               </div>

@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { documentId, purpose, residentId, source } = body;
+    const { documentId, purpose, residentId, source, guestName, guestAddress } = body;
 
     let finalResidentId = residentId;
 
@@ -69,13 +69,16 @@ export async function POST(request: NextRequest) {
       finalResidentId = profile.id;
     }
 
-    if (!documentId || !purpose || !finalResidentId) {
+    const isGuest = source === 'kiosk' && guestName && guestAddress;
+    if (!documentId || !purpose || (!finalResidentId && !isGuest)) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
     const documentRequest = await prisma.documentRequest.create({
       data: {
-        residentId: finalResidentId,
+        residentId: finalResidentId || undefined,
+        guestName: guestName || undefined,
+        guestAddress: guestAddress || undefined,
         documentId,
         purpose,
         status: 'PENDING',

@@ -15,6 +15,11 @@ enum Role {
   ADMIN
 }
 
+enum ResidentType {
+  PERMANENT
+  TEMPORARY
+}
+
 enum Gender {
   MALE
   FEMALE
@@ -73,6 +78,8 @@ model ResidentProfile {
   birthdate   DateTime
   civilStatus CivilStatus
   isVerified  Boolean     @default(false)
+  residentType ResidentType @default(PERMANENT)
+  lengthOfStay String?
 
   requests DocumentRequest[]
 }
@@ -91,8 +98,11 @@ model Document {
 
 model DocumentRequest {
   id         String          @id @default(uuid())
-  residentId String
-  resident   ResidentProfile @relation(fields: [residentId], references: [id])
+  residentId String?
+  resident   ResidentProfile? @relation(fields: [residentId], references: [id])
+  guestName  String?
+  guestAddress String?
+  proofPresented String?
   documentId String
   document   Document        @relation(fields: [documentId], references: [id])
   purpose    String

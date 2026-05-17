@@ -14,6 +14,7 @@ export default function StaffRequestsPage() {
   const [reviewModalOpen, setReviewModalOpen] = React.useState(false);
   const [selectedRequest, setSelectedRequest] = React.useState<any>(null);
   const [translatedPurpose, setTranslatedPurpose] = React.useState('');
+  const [proofPresented, setProofPresented] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const fetchRequests = () => {
@@ -32,6 +33,7 @@ export default function StaffRequestsPage() {
   const openReviewModal = (req: any) => {
     setSelectedRequest(req);
     setTranslatedPurpose(req.translatedPurpose || '');
+    setProofPresented(req.proofPresented || '');
     setReviewModalOpen(true);
   };
 
@@ -39,6 +41,7 @@ export default function StaffRequestsPage() {
     setReviewModalOpen(false);
     setSelectedRequest(null);
     setTranslatedPurpose('');
+    setProofPresented('');
   };
 
   const saveTranslatedPurpose = async (showToast = true) => {
@@ -48,7 +51,7 @@ export default function StaffRequestsPage() {
       const res = await fetch(`/api/requests/${selectedRequest.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ translatedPurpose })
+        body: JSON.stringify({ translatedPurpose, proofPresented })
       });
       if (!res.ok) throw new Error('Failed to save official purpose');
       if (showToast) toast.success('Official purpose saved successfully');
@@ -63,7 +66,7 @@ export default function StaffRequestsPage() {
   };
 
   const handleApprove = async () => {
-    if (translatedPurpose !== selectedRequest.translatedPurpose) {
+    if (translatedPurpose !== selectedRequest.translatedPurpose || proofPresented !== selectedRequest.proofPresented) {
       const saved = await saveTranslatedPurpose(false);
       if (!saved) return;
     }
@@ -72,7 +75,7 @@ export default function StaffRequestsPage() {
   };
 
   const handleReject = async () => {
-    if (translatedPurpose !== selectedRequest.translatedPurpose) {
+    if (translatedPurpose !== selectedRequest.translatedPurpose || proofPresented !== selectedRequest.proofPresented) {
       const saved = await saveTranslatedPurpose(false);
       if (!saved) return;
     }
@@ -85,7 +88,7 @@ export default function StaffRequestsPage() {
       const res = await fetch(`/api/requests/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, remarks: `Status updated to ${status} by staff.` })
+        body: JSON.stringify({ status, remarks: `Status updated to ${status} by staff.`, translatedPurpose, proofPresented })
       });
       if (!res.ok) throw new Error('Failed to update status');
       toast.success(`Request marked as ${status}`);
@@ -130,10 +133,15 @@ export default function StaffRequestsPage() {
                 requests.map((req) => (
                   <tr key={req.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                      {req.resident?.user?.firstName} {req.resident?.user?.lastName}
-                      {req.source === 'KIOSK' && (
+                      {req.residentId ? `${req.resident?.user?.firstName} ${req.resident?.user?.lastName}` : req.guestName}
+                      {req.source?.toUpperCase() === 'KIOSK' && (
                         <span className="px-2 py-0.5 text-[10px] bg-blue-100 text-blue-700 rounded-md font-black border border-blue-200">
                           KIOSK
+                        </span>
+                      )}
+                      {req.resident?.residentType === 'TEMPORARY' && (
+                        <span className="px-2 py-0.5 text-[10px] bg-amber-100 text-amber-700 rounded-md font-black border border-amber-200">
+                          TEMPORARY
                         </span>
                       )}
                     </td>
@@ -188,6 +196,25 @@ export default function StaffRequestsPage() {
                   disabled={isSubmitting || (selectedRequest.status !== 'PENDING' && selectedRequest.status !== 'APPROVED')}
                 />
               </div>
+              {selectedRequest.resident?.residentType === 'TEMPORARY' && (
+                <div>
+                  <div className="mb-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 rounded-md">
+                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">Temporary Resident Details</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300 mt-1">Contact: {selectedRequest.resident?.user?.phone || 'N/A'}</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">Length of Stay: {selectedRequest.resident?.lengthOfStay || 'N/A'}</p>
+                  </div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Proof Presented</label>
+                  <input 
+                    type="text"
+                    value={proofPresented}
+                    onChange={(e) => setProofPresented(e.target.value)}
+                    placeholder="e.g. Old Meralco Bill, Valid ID"
+                    className="w-full p-3 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={isSubmitting || (selectedRequest.status !== 'PENDING' && selectedRequest.status !== 'APPROVED')}
+                  />
+                  <p className="text-xs text-slate-500 mt-1">Required for temporary residents to verify their identity or residency claim.</p>
+                </div>
+              )}
             </div>
             <div className="p-6 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
               <Button variant="outline" onClick={closeReviewModal}>Cancel</Button>
@@ -202,7 +229,7 @@ export default function StaffRequestsPage() {
                     <Button variant="outline" className="border-red-200 text-red-700 hover:bg-red-50" onClick={handleReject} disabled={isSubmitting}>
                       Reject
                     </Button>
-                    <Button variant="default" className="bg-green-600 hover:bg-green-700 text-white border-green-600" onClick={handleApprove} disabled={isSubmitting}>
+                    <Button variant="default" className="bg-green-600 hover:bg-green-700 text-white border-green-600" onClick={handleApprove} disabled={isSubmitting || (selectedRequest.resident?.residentType === 'TEMPORARY' && !proofPresented.trim())}>
                       Approve
                     </Button>
                   </>

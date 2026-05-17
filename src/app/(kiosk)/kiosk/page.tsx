@@ -1,5 +1,5 @@
 import { KioskButton } from "@/components/ui/KioskButton";
-import { FileText, Search } from "lucide-react";
+import { FileText, Search, Users } from "lucide-react";
 import Link from "next/link";
 
 export default function KioskLanding() {
@@ -14,31 +14,45 @@ export default function KioskLanding() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mt-8 relative z-10">
-        <Link href="/kiosk/request" className="w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl mt-8 relative z-10">
+        <Link href="/kiosk/request" className="w-full h-full">
           <KioskButton 
             variant="secondary"
             size="xl" 
             icon={<div className="w-24 h-24 bg-white/10 text-white rounded-3xl flex items-center justify-center mb-4 shadow-inner border border-white/20"><FileText size={56} /></div>}
-            className="flex-col h-auto py-10 text-center gap-2 rounded-3xl"
+            className="flex-col h-full py-10 text-center gap-2 rounded-3xl"
           >
-            <span className="text-3xl font-black text-white drop-shadow-md">Request Document</span>
-            <span className="text-lg font-medium text-blue-200 mt-2">
-              Clearance, Residency, Indigency
+            <span className="text-2xl font-black text-white drop-shadow-md">Registered Resident</span>
+            <span className="text-base font-medium text-blue-200 mt-2">
+              Already in the Masterlist
             </span>
           </KioskButton>
         </Link>
 
-        <Link href="/kiosk/status" className="w-full">
+        <Link href="/kiosk/status" className="w-full h-full">
           <KioskButton 
             variant="secondary"
             size="xl" 
             icon={<div className="w-24 h-24 bg-white/10 text-white rounded-3xl flex items-center justify-center mb-4 shadow-inner border border-white/20"><Search size={56} /></div>}
-            className="flex-col h-auto py-10 text-center gap-2 rounded-3xl"
+            className="flex-col h-full py-10 text-center gap-2 rounded-3xl"
           >
-            <span className="text-3xl font-black text-white drop-shadow-md">Check Status</span>
-            <span className="text-lg font-medium text-blue-200 mt-2">
+            <span className="text-2xl font-black text-white drop-shadow-md">Check Status</span>
+            <span className="text-base font-medium text-blue-200 mt-2">
               Track your pending request
+            </span>
+          </KioskButton>
+        </Link>
+
+        <Link href="/kiosk/walk-in" className="w-full h-full">
+          <KioskButton 
+            variant="secondary"
+            size="xl" 
+            icon={<div className="w-24 h-24 bg-white/10 text-white rounded-3xl flex items-center justify-center mb-4 shadow-inner border border-white/20"><Users size={56} /></div>}
+            className="flex-col h-full py-10 text-center gap-2 rounded-3xl"
+          >
+            <span className="text-2xl font-black text-white drop-shadow-md">Walk-in</span>
+            <span className="text-base font-medium text-blue-200 mt-2">
+              Not in Masterlist / Renters
             </span>
           </KioskButton>
         </Link>

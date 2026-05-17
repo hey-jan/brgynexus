@@ -52,7 +52,7 @@ export async function GET(request: Request) {
       totalIssued,
       recentIssuances: requests.slice(0, 50).map(r => ({
         id: r.id,
-        residentName: `${r.resident.user.firstName} ${r.resident.user.lastName}`,
+        residentName: r.resident ? `${r.resident.user.firstName} ${r.resident.user.lastName}` : (r.guestName || "Unknown"),
         documentName: r.document.name,
         date: r.updatedAt,
         fee: r.document.fee
