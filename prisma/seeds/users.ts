@@ -187,10 +187,76 @@ export async function seedUsers(prisma: any) {
     },
   });
 
+  // Additional 24 residents to reach exactly 30 registered residents
+  const additionalResidents = [
+    { firstName: 'Angelo', lastName: 'Macaraeg', email: 'angelo@brgynexus.com', phone: '09444444444', address: '111 Sampaguita St.', gender: 'MALE', civilStatus: 'SINGLE', birthdate: new Date('1994-04-12') },
+    { firstName: 'Bianca', lastName: 'Perez', email: 'bianca@brgynexus.com', phone: '09555555555', address: '222 Narra St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1996-07-22') },
+    { firstName: 'Christian', lastName: 'Bautista', email: 'christian@brgynexus.com', phone: '09666666666', address: '333 Rizal Ave.', gender: 'MALE', civilStatus: 'MARRIED', birthdate: new Date('1983-10-18') },
+    { firstName: 'Diana', lastName: 'Lim', email: 'diana@brgynexus.com', phone: '09777777777', address: '444 Bonifacio St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1991-02-28') },
+    { firstName: 'Eric', lastName: 'Santos', email: 'eric@brgynexus.com', phone: '09888888888', address: '555 Mabini St.', gender: 'MALE', civilStatus: 'MARRIED', birthdate: new Date('1987-12-05') },
+    { firstName: 'Fiona', lastName: 'Cruz', email: 'fiona@brgynexus.com', phone: '09999999999', address: '666 Sampaguita St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1998-05-14') },
+    { firstName: 'Gabriel', lastName: 'Mercado', email: 'gabriel@brgynexus.com', phone: '09101010101', address: '777 Narra St.', gender: 'MALE', civilStatus: 'SINGLE', birthdate: new Date('1993-09-03') },
+    { firstName: 'Hazel', lastName: 'Gonzaga', email: 'hazel@brgynexus.com', phone: '09121212121', address: '888 Rizal Ave.', gender: 'FEMALE', civilStatus: 'MARRIED', birthdate: new Date('1989-11-20') },
+    { firstName: 'Ian', lastName: 'Pineda', email: 'ian@brgynexus.com', phone: '09131313131', address: '999 Bonifacio St.', gender: 'MALE', civilStatus: 'SINGLE', birthdate: new Date('1995-01-30') },
+    { firstName: 'Jasmin', lastName: 'Alcantara', email: 'jasmin@brgynexus.com', phone: '09141414141', address: '124 Mabini St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1997-08-08') },
+    { firstName: 'Kevin', lastName: 'Ocampo', email: 'kevin@brgynexus.com', phone: '09151515151', address: '235 Sampaguita St.', gender: 'MALE', civilStatus: 'MARRIED', birthdate: new Date('1986-06-25') },
+    { firstName: 'Liza', lastName: 'Soberano', email: 'liza@brgynexus.com', phone: '09161616161', address: '346 Narra St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1998-01-04') },
+    { firstName: 'Manuel', lastName: 'Quezon', email: 'manuel@brgynexus.com', phone: '09171717171', address: '457 Rizal Ave.', gender: 'MALE', civilStatus: 'WIDOWED', birthdate: new Date('1978-08-19') },
+    { firstName: 'Nicole', lastName: 'Aquino', email: 'nicole@brgynexus.com', phone: '09181818181', address: '568 Bonifacio St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1994-12-15') },
+    { firstName: 'Oscar', lastName: 'Romero', email: 'oscar@brgynexus.com', phone: '09191919191', address: '679 Mabini St.', gender: 'MALE', civilStatus: 'SINGLE', birthdate: new Date('1990-03-24') },
+    { firstName: 'Patricia', lastName: 'Evangelista', email: 'patricia@brgynexus.com', phone: '09202020202', address: '780 Sampaguita St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1992-06-18') },
+    { firstName: 'Quirino', lastName: 'Roxas', email: 'quirino@brgynexus.com', phone: '09212121212', address: '891 Narra St.', gender: 'MALE', civilStatus: 'MARRIED', birthdate: new Date('1984-04-17') },
+    { firstName: 'Rachel', lastName: 'Alejandro', email: 'rachel@brgynexus.com', phone: '09232323232', address: '902 Rizal Ave.', gender: 'FEMALE', civilStatus: 'MARRIED', birthdate: new Date('1985-02-11') },
+    { firstName: 'Samuel', lastName: 'Banzon', email: 'samuel@brgynexus.com', phone: '09242424242', address: '135 Bonifacio St.', gender: 'MALE', civilStatus: 'SINGLE', birthdate: new Date('1993-05-29') },
+    { firstName: 'Theresa', lastName: 'Ramos', email: 'theresa@brgynexus.com', phone: '09252525252', address: '246 Mabini St.', gender: 'FEMALE', civilStatus: 'MARRIED', birthdate: new Date('1980-09-07') },
+    { firstName: 'Victor', lastName: 'Magtanggol', email: 'victor@brgynexus.com', phone: '09262626262', address: '357 Sampaguita St.', gender: 'MALE', civilStatus: 'SINGLE', birthdate: new Date('1991-07-14') },
+    { firstName: 'Wendy', lastName: 'Villanueva', email: 'wendy@brgynexus.com', phone: '09272727272', address: '468 Narra St.', gender: 'FEMALE', civilStatus: 'SINGLE', birthdate: new Date('1996-03-31') },
+    { firstName: 'Xavier', lastName: 'Garcia', email: 'xavier@brgynexus.com', phone: '09282828282', address: '579 Rizal Ave.', gender: 'MALE', civilStatus: 'MARRIED', birthdate: new Date('1988-11-09') },
+    { firstName: 'Elijah', lastName: 'Eero', email: 'elijah@brgynexus.com', phone: '09303030303', address: '789 Sampaguita St.', gender: 'MALE', civilStatus: 'SINGLE', birthdate: new Date('2000-01-01') },
+  ];
+
+  const seededAdditionalProfiles = [];
+  for (const res of additionalResidents) {
+    const user = await prisma.user.upsert({
+      where: { email: res.email },
+      update: {},
+      create: {
+        firstName: res.firstName,
+        lastName: res.lastName,
+        email: res.email,
+        passwordHash,
+        phone: res.phone,
+        role: 'RESIDENT'
+      }
+    });
+
+    const profile = await prisma.residentProfile.upsert({
+      where: { userId: user.id },
+      update: {},
+      create: {
+        userId: user.id,
+        address: res.address,
+        gender: res.gender,
+        civilStatus: res.civilStatus,
+        birthdate: res.birthdate,
+        isVerified: true
+      }
+    });
+    seededAdditionalProfiles.push(profile);
+  }
+
   console.log('✓ Seeded Users & Profiles');
   return { 
     admin, 
     staff, 
-    residents: [profile1, profile2, johnEarlProfile, profile3, profile4, profile5] 
+    residents: [
+      profile1, 
+      profile2, 
+      johnEarlProfile, 
+      profile3, 
+      profile4, 
+      profile5,
+      ...seededAdditionalProfiles
+    ] 
   };
 }

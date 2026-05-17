@@ -145,13 +145,30 @@ export default function PendingRequestsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-8 w-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs dark:bg-blue-900/50 dark:text-blue-400">
-                          {req.resident?.user?.firstName?.[0]}{req.resident?.user?.lastName?.[0]}
+                          {req.residentId ? (
+                            `${req.resident?.user?.firstName?.[0] || ""}${req.resident?.user?.lastName?.[0] || ""}`
+                          ) : (
+                            req.guestName?.[0] || "G"
+                          )}
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium text-slate-900 dark:text-white">
-                            {req.resident?.user?.firstName} {req.resident?.user?.lastName}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-medium text-slate-900 dark:text-white">
+                              {req.residentId ? `${req.resident?.user?.firstName} ${req.resident?.user?.lastName}` : req.guestName}
+                            </span>
+                            {req.resident?.residentType === 'PERMANENT' ? (
+                              <span className="px-1.5 py-0.5 text-[9px] bg-green-100 text-green-700 rounded font-black border border-green-200 dark:bg-green-950/50 dark:text-green-400 dark:border-green-900">
+                                REGISTERED
+                              </span>
+                            ) : (
+                              <span className="px-1.5 py-0.5 text-[9px] bg-rose-100 text-rose-700 rounded font-black border border-rose-200 dark:bg-rose-950/50 dark:text-rose-400 dark:border-rose-900">
+                                NON-REGISTERED
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {req.residentId ? req.resident?.address : req.guestAddress}
                           </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{req.resident?.address}</p>
                         </div>
                       </div>
                     </td>

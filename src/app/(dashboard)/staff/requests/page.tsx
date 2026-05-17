@@ -132,16 +132,15 @@ export default function StaffRequestsPage() {
               ) : (
                 requests.map((req) => (
                   <tr key={req.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                      {req.residentId ? `${req.resident?.user?.firstName} ${req.resident?.user?.lastName}` : req.guestName}
-                      {req.source?.toUpperCase() === 'KIOSK' && (
-                        <span className="px-2 py-0.5 text-[10px] bg-blue-100 text-blue-700 rounded-md font-black border border-blue-200">
-                          KIOSK
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100 flex items-center gap-2 flex-wrap">
+                      <span>{req.residentId ? `${req.resident?.user?.firstName} ${req.resident?.user?.lastName}` : req.guestName}</span>
+                      {req.resident?.residentType === 'PERMANENT' ? (
+                        <span className="px-2 py-0.5 text-[10px] bg-green-100 text-green-700 rounded-md font-black border border-green-200">
+                          REGISTERED
                         </span>
-                      )}
-                      {req.resident?.residentType === 'TEMPORARY' && (
-                        <span className="px-2 py-0.5 text-[10px] bg-amber-100 text-amber-700 rounded-md font-black border border-amber-200">
-                          TEMPORARY
+                      ) : (
+                        <span className="px-2 py-0.5 text-[10px] bg-rose-100 text-rose-700 rounded-md font-black border border-rose-200">
+                          NON-REGISTERED
                         </span>
                       )}
                     </td>
