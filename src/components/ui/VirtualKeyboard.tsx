@@ -49,7 +49,7 @@ export function VirtualKeyboard({
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="absolute bottom-0 left-0 w-full z-50 bg-slate-900/95 backdrop-blur-xl border-t border-white/20 p-3 pb-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
+          className="fixed bottom-0 left-0 w-full z-50 bg-slate-900/95 backdrop-blur-xl border-t border-white/20 p-3 pb-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
         >
           <div className="max-w-6xl mx-auto">
              <div className="flex justify-end items-center mb-2 px-2">
