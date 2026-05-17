@@ -30,6 +30,47 @@ export async function seedRequests(prisma: any, users: any, documentIds: string[
     }
   }
 
+  // Add more requests for the newly added residents
+  const newResidentIds = [residentIds[3], residentIds[4], residentIds[5]].filter(Boolean);
+  
+  if (newResidentIds.length >= 3) {
+    // PENDING request
+    requestsToCreate.push({
+      residentId: newResidentIds[0],
+      documentId: documentIds[1] || documentIds[0],
+      purpose: 'For school enrollment',
+      status: 'PENDING',
+      handledById: null,
+    });
+    
+    // REJECTED request
+    requestsToCreate.push({
+      residentId: newResidentIds[1],
+      documentId: documentIds[2] || documentIds[0],
+      purpose: 'For loan application',
+      status: 'REJECTED',
+      handledById: staffId,
+    });
+    
+    // RELEASED request
+    requestsToCreate.push({
+      residentId: newResidentIds[2],
+      documentId: documentIds[0],
+      purpose: 'For local employment',
+      status: 'RELEASED',
+      handledById: staffId,
+    });
+
+    // Another APPROVED request
+    requestsToCreate.push({
+      residentId: newResidentIds[0],
+      documentId: documentIds[0],
+      purpose: 'For identification purposes',
+      status: 'APPROVED',
+      handledById: staffId,
+    });
+  }
+
   await prisma.documentRequest.createMany({
     data: requestsToCreate
   });

@@ -97,7 +97,7 @@ export const KioskLayout = ({ children }: KioskLayoutProps) => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-grow flex flex-col items-center justify-center p-12 z-10 relative">
+      <main className="flex-grow flex flex-col items-center justify-center p-12 z-10 relative overflow-y-auto w-full">
         <div className="w-full max-w-7xl mx-auto h-full flex flex-col">
           {children}
         </div>

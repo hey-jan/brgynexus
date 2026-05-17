@@ -109,10 +109,88 @@ export async function seedUsers(prisma: any) {
     },
   });
 
+  // Resident 3
+  const resident3 = await prisma.user.upsert({
+    where: { email: 'pedro@brgynexus.com' },
+    update: {},
+    create: { 
+      firstName: 'Pedro', 
+      lastName: 'Penduko', 
+      email: 'pedro@brgynexus.com', 
+      passwordHash, 
+      phone: '09111111111', 
+      role: 'RESIDENT' 
+    },
+  });
+
+  const profile3 = await prisma.residentProfile.upsert({
+    where: { userId: resident3.id },
+    update: {},
+    create: { 
+      userId: resident3.id, 
+      address: '789 Mabini St.', 
+      gender: 'MALE', 
+      civilStatus: 'SINGLE', 
+      birthdate: new Date('1995-08-20') 
+    },
+  });
+
+  // Resident 4
+  const resident4 = await prisma.user.upsert({
+    where: { email: 'ana@brgynexus.com' },
+    update: {},
+    create: { 
+      firstName: 'Ana', 
+      lastName: 'Reyes', 
+      email: 'ana@brgynexus.com', 
+      passwordHash, 
+      phone: '09222222222', 
+      role: 'RESIDENT' 
+    },
+  });
+
+  const profile4 = await prisma.residentProfile.upsert({
+    where: { userId: resident4.id },
+    update: {},
+    create: { 
+      userId: resident4.id, 
+      address: '321 Rizal Ave.', 
+      gender: 'FEMALE', 
+      civilStatus: 'WIDOWED', 
+      birthdate: new Date('1970-12-10') 
+    },
+  });
+
+  // Resident 5
+  const resident5 = await prisma.user.upsert({
+    where: { email: 'carlos@brgynexus.com' },
+    update: {},
+    create: { 
+      firstName: 'Carlos', 
+      lastName: 'Dalisay', 
+      email: 'carlos@brgynexus.com', 
+      passwordHash, 
+      phone: '09333333333', 
+      role: 'RESIDENT' 
+    },
+  });
+
+  const profile5 = await prisma.residentProfile.upsert({
+    where: { userId: resident5.id },
+    update: {},
+    create: { 
+      userId: resident5.id, 
+      address: '654 Bonifacio St.', 
+      gender: 'MALE', 
+      civilStatus: 'MARRIED', 
+      birthdate: new Date('1988-03-25') 
+    },
+  });
+
   console.log('✓ Seeded Users & Profiles');
   return { 
     admin, 
     staff, 
-    residents: [profile1, profile2, johnEarlProfile] 
+    residents: [profile1, profile2, johnEarlProfile, profile3, profile4, profile5] 
   };
 }

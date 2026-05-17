@@ -217,27 +217,27 @@ export default function RequestFlow() {
             initial={{ opacity: 0, x: 20 }} 
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="w-full max-w-3xl mx-auto space-y-12"
+            className="w-full max-w-3xl mx-auto space-y-6"
           >
-            <div className="text-center space-y-4 mb-8 relative z-10">
-              <div className="flex items-center justify-center gap-6 text-blue-300 mb-6">
-                <div className="p-4 bg-white/10 rounded-2xl shadow-inner border border-white/20 text-blue-200"><FileText size={40} /></div>
-                <ArrowRight size={24} />
-                <div className="p-4 bg-white/10 rounded-2xl shadow-inner border border-white/20 text-blue-200"><ClipboardCheck size={40} /></div>
+            <div className="text-center space-y-2 mb-6 relative z-10">
+              <div className="flex items-center justify-center gap-4 text-blue-300 mb-4">
+                <div className="p-3 bg-white/10 rounded-2xl shadow-inner border border-white/20 text-blue-200"><FileText size={32} /></div>
+                <ArrowRight size={20} />
+                <div className="p-3 bg-white/10 rounded-2xl shadow-inner border border-white/20 text-blue-200"><ClipboardCheck size={32} /></div>
               </div>
-              <h2 className="text-4xl font-black text-white drop-shadow-md">Purpose of Request</h2>
-              <p className="text-xl text-blue-200 font-medium drop-shadow-sm">Why do you need a {selectedDoc?.name}?</p>
+              <h2 className="text-3xl font-black text-white drop-shadow-md">Purpose of Request</h2>
+              <p className="text-lg text-blue-200 font-medium drop-shadow-sm">Why do you need a {selectedDoc?.name}?</p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl border border-white/20 relative z-10">
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                 {STANDARD_PURPOSES.map(p => (
                   <KioskButton
                     key={p}
                     variant={purposeType === p ? "primary" : "secondary"}
                     onClick={() => setPurposeType(p)}
-                    className="h-auto p-4 text-lg min-h-[100px]"
+                    className="h-auto p-3 text-base min-h-[80px]"
                   >
                     {p}
                   </KioskButton>
@@ -245,7 +245,7 @@ export default function RequestFlow() {
                 <KioskButton
                   variant={purposeType === "Others" ? "primary" : "secondary"}
                   onClick={() => setPurposeType("Others")}
-                  className="h-auto p-4 text-lg min-h-[100px]"
+                  className="h-auto p-3 text-base min-h-[80px]"
                 >
                   Others (Type manually)
                 </KioskButton>
@@ -255,7 +255,7 @@ export default function RequestFlow() {
                 <motion.textarea 
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className="w-full text-2xl p-6 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-medium min-h-[200px] resize-none mb-4"
+                  className="w-full text-xl p-4 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-medium min-h-[120px] resize-none mb-4"
                   placeholder="Type your specific purpose here..."
                   value={purpose}
                   onChange={e => setPurpose(e.target.value)}
@@ -267,16 +267,18 @@ export default function RequestFlow() {
                   variant="secondary" 
                   size="lg" 
                   onClick={() => setStep("document")}
-                  className="h-24 text-2xl"
+                  className="h-20 text-xl w-full"
                 >
                   Go Back
                 </KioskButton>
                 <KioskButton 
+                  variant="primary"
+                  size="lg"
                   disabled={!purposeType || (purposeType === "Others" && !purpose) || loading} 
                   onClick={handleSubmit}
-                  className="h-24 text-2xl"
+                  className="h-20 text-xl w-full"
                 >
-                  {loading ? <Loader2 className="animate-spin" size={40} /> : "Submit Request"}
+                  {loading ? <Loader2 className="animate-spin" size={32} /> : "Submit Request"}
                 </KioskButton>
               </div>
             </div>
