@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Check, X, FileText } from "lucide-react";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 const STANDARD_PURPOSES = [
   "Employment Requirement",
@@ -17,8 +18,6 @@ const STANDARD_PURPOSES = [
 ];
 
 export default function PendingRequestsPage() {
-  const [requests, setRequests] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
   const [reviewModalOpen, setReviewModalOpen] = React.useState(false);
   const [selectedRequest, setSelectedRequest] = React.useState<any>(null);
   const [translatedPurpose, setTranslatedPurpose] = React.useState('');
@@ -26,23 +25,14 @@ export default function PendingRequestsPage() {
 
   const isCustomPurpose = selectedRequest ? !STANDARD_PURPOSES.includes(selectedRequest.purpose) : false;
 
-  const fetchRequests = async () => {
-    try {
+  const { data: requests = [], isLoading, refetch } = useQuery<any[]>({
+    queryKey: ["pending-requests"],
+    queryFn: async () => {
       const res = await fetch('/api/requests?status=PENDING');
-      if (res.ok) {
-        const data = await res.json();
-        setRequests(data);
-      }
-    } catch (error) {
-      toast.error("Failed to load pending requests");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchRequests();
-  }, []);
+      if (!res.ok) throw new Error("Failed to load pending requests");
+      return res.json();
+    },
+  });
 
   const openReviewModal = (req: any) => {
     setSelectedRequest(req);
@@ -67,7 +57,7 @@ export default function PendingRequestsPage() {
       });
       if (!res.ok) throw new Error('Failed to save official purpose');
       if (showToast) toast.success('Official purpose saved successfully');
-      fetchRequests();
+      refetch();
       return true;
     } catch (error: any) {
       toast.error(error.message);
@@ -106,7 +96,7 @@ export default function PendingRequestsPage() {
       if (!res.ok) throw new Error("Failed to update status");
       
       toast.success(`Request ${newStatus.toLowerCase()} successfully`);
-      fetchRequests(); // Refresh the list
+      refetch(); // Refresh the list
     } catch (error) {
       toast.error("Failed to process request");
     }

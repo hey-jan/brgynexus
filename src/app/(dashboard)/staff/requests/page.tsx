@@ -6,29 +6,24 @@ import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 export default function StaffRequestsPage() {
   const router = useRouter();
-  const [requests, setRequests] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
   const [reviewModalOpen, setReviewModalOpen] = React.useState(false);
   const [selectedRequest, setSelectedRequest] = React.useState<any>(null);
   const [translatedPurpose, setTranslatedPurpose] = React.useState('');
   const [proofPresented, setProofPresented] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const fetchRequests = () => {
-    fetch('/api/requests')
-      .then(res => res.json())
-      .then(data => {
-        setRequests(data);
-        setIsLoading(false);
-      });
-  };
-
-  React.useEffect(() => {
-    fetchRequests();
-  }, []);
+  const { data: requests = [], isLoading, refetch } = useQuery<any[]>({
+    queryKey: ["staff-requests"],
+    queryFn: async () => {
+      const res = await fetch('/api/requests');
+      if (!res.ok) throw new Error("Failed to load requests");
+      return res.json();
+    },
+  });
 
   const openReviewModal = (req: any) => {
     setSelectedRequest(req);
@@ -55,7 +50,7 @@ export default function StaffRequestsPage() {
       });
       if (!res.ok) throw new Error('Failed to save official purpose');
       if (showToast) toast.success('Official purpose saved successfully');
-      fetchRequests();
+      refetch();
       return true;
     } catch (error: any) {
       toast.error(error.message);
@@ -92,7 +87,7 @@ export default function StaffRequestsPage() {
       });
       if (!res.ok) throw new Error('Failed to update status');
       toast.success(`Request marked as ${status}`);
-      fetchRequests(); // Refresh table
+      refetch(); // Refresh table
     } catch (error: any) {
       toast.error(error.message);
     }

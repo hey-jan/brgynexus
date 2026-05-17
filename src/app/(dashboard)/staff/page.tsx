@@ -3,19 +3,17 @@
 import * as React from "react";
 import { Clock, CheckCircle, FileBadge, QrCode, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 
 export default function StaffDashboard() {
-  const [stats, setStats] = React.useState<any>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    fetch("/api/analytics")
-      .then((res) => res.json())
-      .then((data) => {
-        setStats(data);
-        setIsLoading(false);
-      });
-  }, []);
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ["staff-analytics"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics");
+      if (!res.ok) throw new Error("Failed to fetch analytics");
+      return res.json();
+    },
+  });
 
   const statCards = [
     {
