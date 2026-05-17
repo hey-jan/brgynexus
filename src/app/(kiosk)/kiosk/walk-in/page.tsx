@@ -265,12 +265,14 @@ export default function WalkInRequestFlow() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-              {documents.map(doc => (
+              {documents.map((doc, index) => (
                 <KioskButton 
                   key={doc.id}
                   variant="secondary"
                   size="lg"
-                  className="h-auto p-8 flex-col items-start gap-4 text-left rounded-[2rem] border-transparent hover:border-blue-400/50 group"
+                  className={`h-auto p-8 flex-col items-start gap-4 text-left rounded-[2rem] border-transparent hover:border-blue-400/50 group ${
+                    index === documents.length - 1 && documents.length % 2 !== 0 ? "md:col-span-2 md:w-[calc(50%-12px)] md:mx-auto" : ""
+                  }`}
                   onClick={() => handleDocSelect(doc)}
                 >
                   <div className="flex items-center justify-between w-full">
