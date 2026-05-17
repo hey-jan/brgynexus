@@ -111,10 +111,6 @@ export const KioskLayout = ({ children }: KioskLayoutProps) => {
           </div>
         </main>
 
-        {/* Glassmorphic Footer */}
-        <footer className="px-8 py-4 flex items-center justify-between text-sm font-medium text-blue-200/80 bg-slate-950/40 backdrop-blur-md border-t border-white/5 z-10 relative shrink-0">
-          <div>&copy; {new Date().getFullYear()} Barangay Management System</div>
-        </footer>
       </div>
     </div>
   );
