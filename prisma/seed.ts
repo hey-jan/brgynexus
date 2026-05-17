@@ -20,6 +20,8 @@ async function main() {
   await prisma.payment.deleteMany();
   await prisma.documentRequest.deleteMany();
   await prisma.document.deleteMany();
+  await prisma.residentProfile.deleteMany();
+  await prisma.user.deleteMany();
 
   // 2. Execute seeds in order of dependency
   const users = await seedUsers(prisma);
