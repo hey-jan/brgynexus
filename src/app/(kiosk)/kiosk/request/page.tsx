@@ -72,6 +72,12 @@ export default function RequestFlow() {
       .catch(err => console.error("Failed to fetch documents", err));
   }, []);
 
+  // Close keyboard on step transition or when purpose type is changed
+  useEffect(() => {
+    setKeyboardOpen(false);
+    setActiveInput(null);
+  }, [step, purposeType]);
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -186,8 +192,8 @@ export default function RequestFlow() {
               
 
 
-              <KioskButton type="submit" disabled={loading} className="mt-12 h-24 text-4xl">
-                {loading ? <Loader2 className="animate-spin" size={48} /> : "Search Profile"}
+              <KioskButton type="submit" disabled={loading} className="mt-12 h-24 text-2xl">
+                <span className="w-full text-center flex justify-center">{loading ? <Loader2 className="animate-spin" size={32} /> : "Search Profile"}</span>
               </KioskButton>
             </form>
           </motion.div>

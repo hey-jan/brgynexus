@@ -71,6 +71,12 @@ export default function WalkInRequestFlow() {
       .catch(err => console.error("Failed to fetch documents", err));
   }, []);
 
+  // Close keyboard on step transition or when purpose type is changed
+  useEffect(() => {
+    setKeyboardOpen(false);
+    setActiveInput(null);
+  }, [step, purposeType]);
+
   const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestData.firstName.trim() || !guestData.lastName.trim() || !guestData.address.trim()) {
@@ -239,7 +245,7 @@ export default function WalkInRequestFlow() {
               </div>
 
               <KioskButton type="submit" disabled={loading} className="mt-8 h-20 text-2xl w-full">
-                {loading ? <Loader2 className="animate-spin" size={32} /> : "Register & Proceed"}
+                <span className="w-full text-center flex justify-center">{loading ? <Loader2 className="animate-spin" size={32} /> : "Proceed"}</span>
               </KioskButton>
             </form>
           </motion.div>

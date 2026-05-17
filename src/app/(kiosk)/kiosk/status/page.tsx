@@ -21,6 +21,13 @@ export default function CheckStatus() {
     setRefNo(val);
   };
 
+  React.useEffect(() => {
+    if (result) {
+      setKeyboardOpen(false);
+      setActiveInput(null);
+    }
+  }, [result]);
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!refNo) return;

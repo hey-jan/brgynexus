@@ -43,6 +43,13 @@ export default function KioskRegister() {
     return "";
   };
 
+  React.useEffect(() => {
+    if (success) {
+      setKeyboardOpen(false);
+      setActiveInput(null);
+    }
+  }, [success]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
