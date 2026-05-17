@@ -95,6 +95,7 @@ export default function CheckStatus() {
         <div className="relative">
           <input 
             required
+            inputMode="none"
             type="text"
             className="w-full text-4xl p-8 rounded-[2rem] border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-black text-center tracking-[0.4em] uppercase"
             value={refNo}

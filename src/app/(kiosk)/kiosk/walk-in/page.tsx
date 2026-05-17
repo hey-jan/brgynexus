@@ -165,6 +165,7 @@ export default function WalkInRequestFlow() {
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
                     <input 
                       required
+                      inputMode="none"
                       type="text"
                       className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
                       value={guestData.firstName}
@@ -179,6 +180,7 @@ export default function WalkInRequestFlow() {
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
                     <input 
                       required
+                      inputMode="none"
                       type="text"
                       className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
                       value={guestData.lastName}
@@ -195,6 +197,7 @@ export default function WalkInRequestFlow() {
                   <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
                   <input 
                     required
+                    inputMode="none"
                     type="text"
                     className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-medium"
                     value={guestData.address}
@@ -210,6 +213,7 @@ export default function WalkInRequestFlow() {
                   <div className="relative">
                     <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
                     <input 
+                      inputMode="none"
                       type="text"
                       className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
                       value={guestData.lengthOfStay}
@@ -223,6 +227,7 @@ export default function WalkInRequestFlow() {
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/50" size={20} />
                     <input 
+                      inputMode="none"
                       type="text"
                       className="w-full text-lg pl-12 p-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_15px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
                       value={guestData.phone}
@@ -320,6 +325,7 @@ export default function WalkInRequestFlow() {
 
               {purposeType === "Others" && (
                   <motion.textarea 
+                  inputMode="none"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   className="w-full text-xl p-4 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-medium min-h-[120px] resize-none mb-4"

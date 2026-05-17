@@ -162,6 +162,7 @@ export default function RequestFlow() {
                   <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">First Name</label>
                   <input 
                     required
+                    inputMode="none"
                     type="text"
                     className="w-full text-2xl p-6 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
                     value={searchData.firstName}
@@ -173,6 +174,7 @@ export default function RequestFlow() {
                   <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">Last Name</label>
                   <input 
                     required
+                    inputMode="none"
                     type="text"
                     className="w-full text-2xl p-6 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-bold"
                     value={searchData.lastName}
@@ -271,6 +273,7 @@ export default function RequestFlow() {
 
               {purposeType === "Others" && (
                   <motion.textarea 
+                  inputMode="none"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   className="w-full text-xl p-4 rounded-2xl border-2 border-white/10 bg-white/5 text-white placeholder-blue-300/50 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] outline-none transition-all font-medium min-h-[120px] resize-none mb-4"

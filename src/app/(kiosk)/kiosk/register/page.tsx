@@ -92,6 +92,7 @@ export default function KioskRegister() {
                   <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">First Name</label>
                   <input 
                     required
+                    inputMode="none"
                     name="firstName"
                     type="text"
                     className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-bold uppercase"
@@ -105,6 +106,7 @@ export default function KioskRegister() {
                   <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">Last Name</label>
                   <input 
                     required
+                    inputMode="none"
                     name="lastName"
                     type="text"
                     className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-bold uppercase"
@@ -120,6 +122,7 @@ export default function KioskRegister() {
                 <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">Email Address</label>
                 <input 
                   required
+                  inputMode="none"
                   name="email"
                   type="email"
                   className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-medium"
@@ -134,6 +137,7 @@ export default function KioskRegister() {
                 <label className="text-sm font-bold uppercase tracking-widest text-blue-300 ml-2">PIN / Password</label>
                 <input 
                   required
+                  inputMode="none"
                   name="password"
                   type="password"
                   className="w-full text-xl p-6 rounded-2xl border-2 border-white/10 focus:border-blue-400 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(96,165,250,0.3)] bg-white/5 text-white placeholder-blue-300/30 outline-none transition-all font-medium tracking-widest"
