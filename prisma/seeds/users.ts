@@ -53,7 +53,9 @@ export async function seedUsers(prisma: any) {
       address: '123 Sampaguita St.', 
       gender: 'MALE', 
       civilStatus: 'SINGLE', 
-      birthdate: new Date('1990-01-01') 
+      birthdate: new Date('1990-01-01'),
+      isVerified: true,
+      residentType: 'PERMANENT'
     },
   });
 
@@ -79,7 +81,9 @@ export async function seedUsers(prisma: any) {
       address: '456 Narra St.', 
       gender: 'FEMALE', 
       civilStatus: 'MARRIED', 
-      birthdate: new Date('1985-05-15') 
+      birthdate: new Date('1985-05-15'),
+      isVerified: true,
+      residentType: 'PERMANENT'
     },
   });
 
@@ -105,7 +109,8 @@ export async function seedUsers(prisma: any) {
       gender: 'MALE', 
       civilStatus: 'SINGLE', 
       birthdate: new Date('1990-01-01'),
-      isVerified: true
+      isVerified: true,
+      residentType: 'PERMANENT'
     },
   });
 
@@ -131,7 +136,9 @@ export async function seedUsers(prisma: any) {
       address: '789 Mabini St.', 
       gender: 'MALE', 
       civilStatus: 'SINGLE', 
-      birthdate: new Date('1995-08-20') 
+      birthdate: new Date('1995-08-20'),
+      isVerified: true,
+      residentType: 'PERMANENT'
     },
   });
 
@@ -157,7 +164,9 @@ export async function seedUsers(prisma: any) {
       address: '321 Rizal Ave.', 
       gender: 'FEMALE', 
       civilStatus: 'WIDOWED', 
-      birthdate: new Date('1970-12-10') 
+      birthdate: new Date('1970-12-10'),
+      isVerified: true,
+      residentType: 'PERMANENT'
     },
   });
 
@@ -183,7 +192,9 @@ export async function seedUsers(prisma: any) {
       address: '654 Bonifacio St.', 
       gender: 'MALE', 
       civilStatus: 'MARRIED', 
-      birthdate: new Date('1988-03-25') 
+      birthdate: new Date('1988-03-25'),
+      isVerified: true,
+      residentType: 'PERMANENT'
     },
   });
 
@@ -239,7 +250,8 @@ export async function seedUsers(prisma: any) {
         gender: res.gender,
         civilStatus: res.civilStatus,
         birthdate: res.birthdate,
-        isVerified: true
+        isVerified: true,
+        residentType: 'PERMANENT'
       }
     });
     seededAdditionalProfiles.push(profile);
