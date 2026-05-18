@@ -1,0 +1,4 @@
+firstName,middleName,lastName,email,phone,gender,address,birthdate,civilStatus,residentType,lengthOfStay
+Duplicate,,User,rico.delacruz@example.com,09171112222,Male,789 Sampaguita St.,1995-10-10,Single,Permanent,
+Missing,,Address,missing.address@example.com,09175556666,Male,,1998-08-08,Single,Permanent,
+BadDate,,Birthdate,bad.date@example.com,09178889999,Female,102 Acacia St.,invalid-date,Married,Permanent,

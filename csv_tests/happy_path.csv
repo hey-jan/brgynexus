@@ -1,0 +1,3 @@
+firstName,middleName,lastName,email,phone,gender,address,birthdate,civilStatus,residentType,lengthOfStay
+Rico,,Dela Cruz,rico.delacruz@example.com,09171112222,Male,789 Sampaguita St.,1995-10-10,Single,Permanent,
+Lina,Santos,Gomez,lina.gomez@example.com,09183334444,Female,101 Narra St.,1992-12-12,Married,Permanent,

@@ -1,15 +1,39 @@
 import "dotenv/config";
 import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 import { seedUsers } from './seeds/users';
 import { seedDocuments } from './seeds/documents';
 import { seedRequests } from './seeds/requests';
 
-const connectionString = process.env.DATABASE_URL || 'postgres://postgres:password@localhost:5432/brgynexus';
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+const getSeedConnectionString = () => {
+  const fallback = 'postgres://postgres:password@localhost:5432/brgynexus';
+  const rawConnectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || fallback;
+
+  try {
+    const url = new URL(rawConnectionString);
+    const isSupabaseHost =
+      url.hostname.endsWith('.supabase.co') || url.hostname.endsWith('.pooler.supabase.com');
+
+    if (isSupabaseHost) {
+      url.searchParams.delete('sslmode');
+      url.searchParams.set('ssl', 'no-verify');
+    }
+
+    return {
+      connectionString: url.toString(),
+      ssl: isSupabaseHost ? { rejectUnauthorized: false } : undefined,
+    };
+  } catch {
+    return {
+      connectionString: rawConnectionString,
+      ssl: undefined,
+    };
+  }
+};
+
+const { connectionString, ssl } = getSeedConnectionString();
+const adapter = new PrismaPg({ connectionString, ssl });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
@@ -38,5 +62,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-    await pool.end();
   });
