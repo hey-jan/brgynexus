@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BrgyNexus
 
-## Getting Started
+BrgyNexus is a comprehensive digital barangay management system built to modernize and streamline local government operations. It replaces manual, paper-based processes with an efficient digital workflow for residents, barangay staff, and administrators.
 
-First, run the development server:
+Currently configured for **Barangay Sambag I, Cebu City**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌟 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*   **Three Dedicated Portals:** Tailored dashboards for Residents, Staff, and Administrators.
+*   **Digital Document Requests:** Residents can request clearances, indigency certificates, and more online.
+*   **Automated PDF Generation:** Staff can review and generate official, printable PDF certificates with a single click using `@react-pdf/renderer`.
+*   **QR Code Verification:** Every generated document includes a unique tracking number and QR code to prevent forgery and allow instant authenticity verification.
+*   **Kiosk Mode:** A dedicated public-facing interface for walk-in residents and guests to check status or request documents on-site.
+*   **Admin Analytics:** Rich visual dashboards tracking revenue, request volumes, and document issuance trends over time.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 💻 Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   **Framework:** [Next.js](https://nextjs.org/) (App Router)
+*   **Database & ORM:** [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+*   **PDF Generation:** [@react-pdf/renderer](https://react-pdf.org/)
+*   **Charts:** [Recharts](https://recharts.org/)
+*   **Icons:** [Lucide React](https://lucide.dev/)
 
-## Learn More
+## 🚀 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
+*   Node.js (v18 or higher)
+*   PostgreSQL database
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1.  Clone the repository
+    ```bash
+    git clone https://github.com/hey-jan/brgynexus.git
+    cd brgynexus
+    ```
 
-## Deploy on Vercel
+2.  Install dependencies
+    ```bash
+    npm install
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3.  Set up your environment variables
+    Create a `.env` file in the root directory and add your database connection string:
+    ```env
+    DATABASE_URL="postgresql://user:password@localhost:5432/brgynexus?schema=public"
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4.  Run Prisma migrations and seed the database
+    ```bash
+    npx prisma migrate dev
+    npx prisma db seed
+    ```
+
+5.  Start the development server
+    ```bash
+    npm run dev
+    ```
+
+6.  Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🔐 Test Credentials (Local Development)
+
+If you have run the database seed, you can use the following default accounts to explore the different portals:
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin@brgynexus.com` | `password123` |
+| **Staff** | `staff@brgynexus.com` | `password123` |
+| **Resident** | `resident@brgynexus.com` | `password123` |
+
+## 📸 Screenshots
+
+*(Add your screenshots here! Recommended: Admin Dashboard, PDF Generation Flow, and Kiosk Mode)*
+
+---
+*Built by John Earl P. Balabat*
