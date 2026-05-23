@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Settings as SettingsIcon, Home, FileText, Bell, Save, Shield, Upload } from "lucide-react";
+import { Settings as SettingsIcon, Home, Bell, Save, Shield, Upload, Mail, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { toast } from "sonner";
@@ -19,6 +19,8 @@ export default function AdminSettingsPage() {
   });
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [sessionTimeout, setSessionTimeout] = React.useState(true);
+  const [twoFactor, setTwoFactor] = React.useState(false);
 
   React.useEffect(() => {
     fetch('/api/admin/settings')
@@ -74,7 +76,6 @@ export default function AdminSettingsPage() {
 
   const tabs = [
     { id: "general", label: "General & Layout", icon: Home },
-    { id: "documents", label: "Documents", icon: FileText },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "security", label: "Security", icon: Shield },
   ];
@@ -187,34 +188,81 @@ export default function AdminSettingsPage() {
             </div>
           )}
 
-          {activeTab === "documents" && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold">Document Policies</h3>
-              <p className="text-slate-500">To edit the content/text of the documents, please go to the <strong>Document Templates</strong> tab in the sidebar.</p>
-            </div>
-          )}
-
           {activeTab === "notifications" && (
-            <div className="space-y-6 text-center py-12">
-              <Bell className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-xl font-bold">Notification Settings</h3>
-              <p className="text-slate-500 max-w-sm mx-auto">Configure email alerts and SMS notifications for residents.</p>
-              <p className="text-xs text-blue-600 font-bold uppercase mt-4">Requires SendGrid/Twilio API Keys</p>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Notification Settings</h3>
+                <p className="text-sm text-slate-500 mt-1">Configure how the system notifies residents about their requests.</p>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="p-2.5 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
+                    <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800 dark:text-slate-200">Email Notifications</p>
+                    <p className="text-sm text-slate-500 mt-0.5">Send automatic email updates when a request status changes.</p>
+                    <span className="inline-block mt-2 text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-2.5 py-1 rounded-full">
+                      Requires Resend API Key
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="p-2.5 bg-green-100 dark:bg-green-900/40 rounded-lg">
+                    <MessageSquare className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800 dark:text-slate-200">SMS Notifications</p>
+                    <p className="text-sm text-slate-500 mt-0.5">Send SMS alerts to residents when documents are ready for pickup.</p>
+                    <span className="inline-block mt-2 text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-2.5 py-1 rounded-full">
+                      Requires Twilio API Key
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           {activeTab === "security" && (
             <div className="space-y-6">
-              <h3 className="text-xl font-bold">Security & Access</h3>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Security & Access</h3>
+                <p className="text-sm text-slate-500 mt-1">Manage session and authentication settings.</p>
+              </div>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
                   <div>
-                    <p className="font-medium">Session Timeout</p>
-                    <p className="text-sm text-slate-500">Log users out automatically after 24 hours of inactivity.</p>
+                    <p className="font-semibold text-slate-800 dark:text-slate-200">Session Timeout</p>
+                    <p className="text-sm text-slate-500">Automatically log users out after 24 hours of inactivity.</p>
                   </div>
-                  <div className="h-6 w-11 bg-blue-600 rounded-full relative cursor-pointer">
-                    <div className="absolute right-1 top-1 h-4 w-4 bg-white rounded-full"></div>
+                  <button
+                    type="button"
+                    onClick={() => setSessionTimeout(v => !v)}
+                    className={`relative h-6 w-11 rounded-full transition-colors duration-200 focus:outline-none ${
+                      sessionTimeout ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-600"
+                    }`}
+                  >
+                    <div className={`absolute top-1 h-4 w-4 bg-white rounded-full shadow transition-transform duration-200 ${
+                      sessionTimeout ? "translate-x-6" : "translate-x-1"
+                    }`} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div>
+                    <p className="font-semibold text-slate-800 dark:text-slate-200">Require Strong Passwords</p>
+                    <p className="text-sm text-slate-500">Enforce minimum 8 characters with mixed case for all accounts.</p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setTwoFactor(v => !v)}
+                    className={`relative h-6 w-11 rounded-full transition-colors duration-200 focus:outline-none ${
+                      twoFactor ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-600"
+                    }`}
+                  >
+                    <div className={`absolute top-1 h-4 w-4 bg-white rounded-full shadow transition-transform duration-200 ${
+                      twoFactor ? "translate-x-6" : "translate-x-1"
+                    }`} />
+                  </button>
                 </div>
               </div>
             </div>

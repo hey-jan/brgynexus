@@ -20,7 +20,8 @@ export default function StaffDashboard() {
       label: "Pending Review",
       value: stats?.pendingCount || 0,
       icon: Clock,
-      color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
+      color: "text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400",
+      border: "hover:border-amber-400",
       href: "/staff/pending",
     },
     {
@@ -28,13 +29,15 @@ export default function StaffDashboard() {
       value: stats?.statusChart?.find((s: any) => s.name === 'APPROVED')?.value || 0,
       icon: FileBadge,
       color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
+      border: "hover:border-blue-400",
       href: "/staff/generate",
     },
     {
       label: "Released Today",
       value: stats?.releasedCount || 0,
       icon: CheckCircle,
-      color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
+      color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400",
+      border: "hover:border-emerald-400",
       href: "/staff/requests",
     },
   ];
@@ -57,16 +60,16 @@ export default function StaffDashboard() {
       {/* Stat Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {statCards.map((stat) => (
-          <Link 
-            key={stat.label} 
+          <Link
+            key={stat.label}
             href={stat.href}
-            className="group p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-blue-500 transition-all"
+            className={`group p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm ${stat.border} transition-all`}
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${stat.color}`}>
                 <stat.icon className="h-6 w-6" />
               </div>
-              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="h-4 w-4 text-slate-400 group-hover:translate-x-1 transition-all" />
             </div>
             <div className="text-3xl font-bold text-slate-900 dark:text-white">{stat.value}</div>
             <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">{stat.label}</div>

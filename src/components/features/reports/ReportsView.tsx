@@ -48,7 +48,7 @@ export function ReportsView() {
             System Reports
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
-            Insights and issuance summaries for Barangay Nexus.
+            Insights and issuance summaries for Barangay Sambag I.
           </p>
         </div>
         <div className="flex items-center gap-2">

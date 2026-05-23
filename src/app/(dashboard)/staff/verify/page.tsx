@@ -86,7 +86,9 @@ export default function VerifyDashboardPage() {
                 <User className="w-4 h-4 mr-2" /> Issued To
               </p>
               <p className="text-lg font-semibold text-slate-900 dark:text-white">
-                {result.request.resident.user.firstName} {result.request.resident.user.lastName}
+                {result.request.resident
+                  ? `${result.request.resident.user.firstName} ${result.request.resident.user.lastName}`
+                  : (result.request.guestName ?? "Unknown Guest")}
               </p>
             </div>
             <div className="md:col-span-2 border-t border-slate-100 dark:border-slate-800 pt-4 mt-2">

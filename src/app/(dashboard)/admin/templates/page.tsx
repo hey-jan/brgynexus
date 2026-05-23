@@ -31,7 +31,7 @@ export default function AdminTemplatesPage() {
 
   const handleSelect = (doc: any) => {
     setSelectedDocId(doc.id);
-    setTemplateContent(doc.templateContent || "This is to certify that Mr./Ms. {{residentName}}, of legal age, is a bonafide resident of {{address}}, Barangay Nexus.\n\nBased on the records of this office, the above-named individual has no derogatory record or pending case filed against him/her in this barangay as of this date.\n\nThis certification is being issued upon the request of the interested party for the following purpose:\n{{purpose}}");
+    setTemplateContent(doc.templateContent || "This is to certify that Mr./Ms. {{residentName}}, of legal age, is a bonafide resident of {{address}}, Barangay Sambag I, Cebu City.\n\nBased on the records of this office, the above-named individual has no derogatory record or pending case filed against him/her in this barangay as of this date.\n\nThis certification is being issued upon the request of the interested party for the following purpose:\n{{purpose}}");
   };
 
   const handleSave = async () => {

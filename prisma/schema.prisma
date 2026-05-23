@@ -190,11 +190,11 @@ model Announcement {
 
 model BarangaySettings {
   id              String   @id @default("default")
-  barangayName    String   @default("Barangay Nexus")
-  city            String   @default("City/Municipality")
-  province        String   @default("Province")
+  barangayName    String   @default("Barangay Sambag I")
+  city            String   @default("Cebu City")
+  province        String   @default("Cebu")
   logoUrl         String?  @db.Text
-  captainName     String   @default("Hon. Juan Dela Cruz")
+  captainName     String   @default("Hon. John Earl P. Balabat")
   captainTitle    String   @default("Punong Barangay")
   signatureUrl    String?  @db.Text
   updatedAt       DateTime @updatedAt

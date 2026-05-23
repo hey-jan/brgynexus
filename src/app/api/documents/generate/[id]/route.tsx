@@ -106,11 +106,11 @@ export async function POST(
     if (!settings) {
       settings = {
         id: 'default',
-        barangayName: 'Barangay Nexus',
-        city: 'City/Municipality',
-        province: 'Province',
+        barangayName: 'Barangay Sambag I',
+        city: 'Cebu City',
+        province: 'Cebu',
         logoUrl: null,
-        captainName: 'Hon. Juan Dela Cruz',
+        captainName: 'Hon. John Earl P. Balabat',
         captainTitle: 'Punong Barangay',
         signatureUrl: null,
         updatedAt: new Date()
@@ -134,7 +134,7 @@ export async function POST(
     }
 
     // Parse template
-    let bodyText = documentData.templateContent || "This is to certify that Mr./Ms. {{residentName}}, of legal age, is a bonafide resident of {{address}}, Barangay Nexus.\n\nBased on the records of this office, the above-named individual has no derogatory record or pending case filed against him/her in this barangay as of this date.\n\nThis certification is being issued upon the request of the interested party for the following purpose:\n{{purpose}}";
+    let bodyText = documentData.templateContent || "This is to certify that Mr./Ms. {{residentName}}, of legal age, is a bonafide resident of {{address}}, Barangay Sambag I, Cebu City.\n\nBased on the records of this office, the above-named individual has no derogatory record or pending case filed against him/her in this barangay as of this date.\n\nThis certification is being issued upon the request of the interested party for the following purpose:\n{{purpose}}";
 
     bodyText = bodyText.replace(/{{residentName}}/g, residentName);
     bodyText = bodyText.replace(/{{address}}/g, address);

@@ -34,7 +34,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ hash: s
           <div className="p-8 text-center space-y-4">
             <ShieldAlert className="w-12 h-12 text-red-500 mx-auto opacity-50" />
             <p className="text-slate-600">
-              The QR code scanned does not exist in the Barangay Nexus database. 
+              The QR code scanned does not exist in the Barangay Sambag I database. 
               This document is not authentic or has been tampered with.
             </p>
             <div className="pt-4">
@@ -62,7 +62,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ hash: s
              <CheckCircle className="w-20 h-20 text-white mx-auto mb-4 relative z-10" />
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">AUTHENTIC</h1>
-          <p className="text-green-100 mt-2 font-medium">Verified by Barangay Nexus</p>
+          <p className="text-green-100 mt-2 font-medium">Verified by Barangay Sambag I</p>
         </div>
         
         <div className="p-8">
