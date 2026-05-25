@@ -7,34 +7,37 @@ import { toast } from "sonner";
 import { CreditCard, Loader2, FileText, AlertTriangle, CheckCircle, Clock, XCircle, FileBadge } from "lucide-react";
 import Link from "next/link";
 
+import { useQuery } from '@tanstack/react-query';
+
 export default function MyRequestsPage() {
-  const [requests, setRequests] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { data: requests = [], isLoading, refetch: fetchRequests } = useQuery({
+    queryKey: ['resident-requests'],
+    queryFn: async () => {
+      const res = await fetch('/api/requests');
+      if (!res.ok) throw new Error('Failed to fetch requests');
+      return res.json();
+    }
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['resident-profile-check'],
+    queryFn: async () => {
+      const res = await fetch('/api/profile');
+      if (!res.ok) throw new Error('Failed to fetch profile');
+      return res.json();
+    }
+  });
+
+  const profileIncomplete = React.useMemo(() => {
+    if (!profile) return false;
+    const addr = profile?.residentProfile?.address;
+    const phone = profile?.phone;
+    return (!phone || addr === "Pending Update" || !addr);
+  }, [profile]);
+
   const [processingId, setProcessingId] = React.useState<string | null>(null);
-  const [profileIncomplete, setProfileIncomplete] = React.useState(false);
 
-  const fetchRequests = () => {
-    fetch('/api/requests')
-      .then(res => res.json())
-      .then(data => {
-        setRequests(data);
-        setIsLoading(false);
-      });
-  };
 
-  React.useEffect(() => {
-    fetchRequests();
-    // Check if profile is incomplete
-    fetch('/api/profile')
-      .then(res => res.json())
-      .then(data => {
-        const addr = data?.residentProfile?.address;
-        const phone = data?.phone;
-        if (!phone || addr === "Pending Update" || !addr) {
-          setProfileIncomplete(true);
-        }
-      });
-  }, []);
 
   const handlePayment = async (id: string) => {
     setProcessingId(id);
@@ -143,7 +146,7 @@ export default function MyRequestsPage() {
                   </td>
                 </tr>
               ) : (
-                requests.map((req) => (
+                requests.map((req: any) => (
                   <tr key={req.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{req.document?.name}</div>

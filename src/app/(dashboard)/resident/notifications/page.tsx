@@ -4,19 +4,17 @@ import * as React from "react";
 import { format } from "date-fns";
 import { Bell, CheckCircle2, Clock, Info, FileText, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useQuery } from '@tanstack/react-query';
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    fetch('/api/notifications')
-      .then(res => res.json())
-      .then(data => {
-        setNotifications(data);
-        setIsLoading(false);
-      });
-  }, []);
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ['resident-notifications'],
+    queryFn: async () => {
+      const res = await fetch('/api/notifications');
+      if (!res.ok) throw new Error('Failed to fetch notifications');
+      return res.json();
+    }
+  });
 
   const getStatusInfo = (status: string) => {
     switch(status) {
@@ -66,7 +64,7 @@ export default function NotificationsPage() {
             <p className="text-slate-500 mt-1">We'll notify you here when the status of your requests changes.</p>
           </div>
         ) : (
-          notifications.map((notif) => {
+          notifications.map((notif: any) => {
             const info = getStatusInfo(notif.status);
             return (
               <div key={notif.id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-blue-300 transition-all group">

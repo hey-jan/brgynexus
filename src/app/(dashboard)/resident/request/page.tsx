@@ -17,21 +17,25 @@ const STANDARD_PURPOSES = [
   "Others"
 ];
 
+import { useQuery } from '@tanstack/react-query';
+
 export default function RequestDocumentPage() {
   const router = useRouter();
-  const [documents, setDocuments] = React.useState<any[]>([]);
+  
+  const { data: documents = [] } = useQuery({
+    queryKey: ['resident-documents'],
+    queryFn: async () => {
+      const res = await fetch('/api/documents');
+      if (!res.ok) throw new Error('Failed to load documents');
+      return res.json();
+    }
+  });
+
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [purposeType, setPurposeType] = React.useState("");
   const [selectedDocId, setSelectedDocId] = React.useState("");
 
-  const selectedDoc = documents.find((d) => d.id === selectedDocId);
-
-  React.useEffect(() => {
-    fetch('/api/documents')
-      .then(res => res.json())
-      .then(data => setDocuments(data))
-      .catch(() => toast.error("Failed to load documents"));
-  }, []);
+  const selectedDoc = documents.find((d: any) => d.id === selectedDocId);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,7 +104,7 @@ export default function RequestDocumentPage() {
               className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
             >
               <option value="">Choose a document type...</option>
-              {documents.map(doc => (
+              {documents.map((doc: any) => (
                 <option key={doc.id} value={doc.id}>{doc.name}</option>
               ))}
             </select>

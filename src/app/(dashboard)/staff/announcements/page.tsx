@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
+import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -9,8 +10,15 @@ import { Megaphone, Trash2, Edit } from "lucide-react";
 import { toast } from "sonner";
 
 export default function StaffAnnouncementsPage() {
-  const [announcements, setAnnouncements] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { data: announcements = [], isLoading, refetch: fetchAnnouncements } = useQuery({
+    queryKey: ['staff-announcements'],
+    queryFn: async () => {
+      const res = await fetch('/api/announcements');
+      if (!res.ok) throw new Error('Failed to fetch announcements');
+      return res.json();
+    }
+  });
+
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -20,23 +28,6 @@ export default function StaffAnnouncementsPage() {
   const [priority, setPriority] = React.useState('NORMAL');
   const [editId, setEditId] = React.useState<string | null>(null);
 
-  const fetchAnnouncements = async () => {
-    try {
-      const res = await fetch('/api/announcements');
-      if (res.ok) {
-        const data = await res.json();
-        setAnnouncements(data);
-      }
-    } catch (error) {
-      toast.error("Failed to load announcements");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchAnnouncements();
-  }, []);
 
   const handleOpenModal = (announcement: any = null) => {
     if (announcement) {
@@ -142,7 +133,7 @@ export default function StaffAnnouncementsPage() {
               ) : announcements.length === 0 ? (
                 <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-slate-500">No announcements found.</td></tr>
               ) : (
-                announcements.map((announcement) => (
+                announcements.map((announcement: any) => (
                   <tr key={announcement.id}>
                     <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-slate-100 max-w-[200px] truncate">
                       {announcement.title}

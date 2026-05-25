@@ -7,20 +7,27 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, 
   PieChart, Pie, Cell 
 } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a855f7'];
 
 export default function AdminDashboard() {
-  const [data, setData] = React.useState<any>(null);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin-analytics-dashboard'],
+    queryFn: async () => {
+      const res = await fetch('/api/analytics');
+      if (!res.ok) throw new Error('Failed to load analytics');
+      return res.json();
+    }
+  });
 
   React.useEffect(() => {
-    fetch('/api/analytics')
-      .then(res => res.json())
-      .then(setData)
-      .catch(() => toast.error("Failed to load analytics"));
-  }, []);
+    if (isError) {
+      toast.error("Failed to load analytics");
+    }
+  }, [isError]);
 
-  if (!data) return (
+  if (isLoading || !data) return (
     <div>
       <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Admin Overview</h1>
       <p className="text-slate-500">Loading data...</p>

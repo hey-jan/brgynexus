@@ -16,12 +16,19 @@ import {
   ArrowRight,
   Info
 } from "lucide-react";
+import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
 
 export default function UserManagementPage() {
-  const [users, setUsers] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { data: users = [], isLoading, refetch } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const res = await fetch('/api/users');
+      if (!res.ok) throw new Error('Failed to fetch users');
+      return res.json();
+    }
+  });
   
   // Bulk upload states
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -30,23 +37,7 @@ export default function UserManagementPage() {
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [results, setResults] = React.useState<any | null>(null);
 
-  const fetchUsers = () => {
-    setIsLoading(true);
-    fetch('/api/users')
-      .then(res => res.json())
-      .then(data => {
-        setUsers(data);
-        setIsLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch users:", err);
-        setIsLoading(false);
-      });
-  };
 
-  React.useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const getRoleColor = (role: string) => {
     switch(role) {
@@ -127,11 +118,7 @@ export default function UserManagementPage() {
       setResults(data);
       
       // Refresh user list dynamically
-      fetch('/api/users')
-        .then(res => res.json())
-        .then(data => {
-          setUsers(data);
-        });
+      refetch();
         
       if (data.errorCount === 0) {
         toast.success(`Successfully registered ${data.successCount} residents!`);
@@ -205,7 +192,7 @@ export default function UserManagementPage() {
                   </td>
                 </tr>
               ) : (
-                users.map((user) => (
+                users.map((user: any) => (
                   <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {user.firstName} {user.lastName}

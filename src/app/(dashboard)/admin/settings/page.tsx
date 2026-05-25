@@ -5,6 +5,7 @@ import { Settings as SettingsIcon, Home, Bell, Save, Shield, Upload, Mail, Messa
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { toast } from "sonner";
+import { useQuery } from '@tanstack/react-query';
 
 export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = React.useState("general");
@@ -17,29 +18,33 @@ export default function AdminSettingsPage() {
     logoUrl: "",
     signatureUrl: "",
   });
-  const [isLoading, setIsLoading] = React.useState(true);
+  
+  const { data: initialSettings, isLoading } = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/settings');
+      if (!res.ok) throw new Error('Failed to fetch settings');
+      return res.json();
+    }
+  });
+
   const [isSaving, setIsSaving] = React.useState(false);
   const [sessionTimeout, setSessionTimeout] = React.useState(true);
   const [twoFactor, setTwoFactor] = React.useState(false);
 
   React.useEffect(() => {
-    fetch('/api/admin/settings')
-      .then(res => res.json())
-      .then(data => {
-        if (data && !data.error) {
-          setSettings({
-            barangayName: data.barangayName || "",
-            city: data.city || "",
-            province: data.province || "",
-            captainName: data.captainName || "",
-            captainTitle: data.captainTitle || "",
-            logoUrl: data.logoUrl || "",
-            signatureUrl: data.signatureUrl || "",
-          });
-        }
-        setIsLoading(false);
+    if (initialSettings && !initialSettings.error) {
+      setSettings({
+        barangayName: initialSettings.barangayName || "",
+        city: initialSettings.city || "",
+        province: initialSettings.province || "",
+        captainName: initialSettings.captainName || "",
+        captainTitle: initialSettings.captainTitle || "",
+        logoUrl: initialSettings.logoUrl || "",
+        signatureUrl: initialSettings.signatureUrl || "",
       });
-  }, []);
+    }
+  }, [initialSettings]);
 
   const handleSave = async () => {
     setIsSaving(true);

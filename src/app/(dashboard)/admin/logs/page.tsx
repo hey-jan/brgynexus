@@ -4,18 +4,17 @@ import * as React from "react";
 import { format } from "date-fns";
 import { ShieldAlert, User, Clock, FileText, CheckCircle2, XCircle, Info } from "lucide-react";
 
-export default function LogsPage() {
-  const [logs, setLogs] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+import { useQuery } from '@tanstack/react-query';
 
-  React.useEffect(() => {
-    fetch('/api/logs')
-      .then(res => res.json())
-      .then(data => {
-        setLogs(data);
-        setIsLoading(false);
-      });
-  }, []);
+export default function LogsPage() {
+  const { data: logs = [], isLoading } = useQuery({
+    queryKey: ['admin-logs'],
+    queryFn: async () => {
+      const res = await fetch('/api/logs');
+      if (!res.ok) throw new Error('Failed to fetch logs');
+      return res.json();
+    }
+  });
 
   const getStatusIcon = (status: string) => {
     switch(status) {
@@ -48,7 +47,7 @@ export default function LogsPage() {
           ) : logs.length === 0 ? (
             <div className="p-8 text-center text-slate-500">No logs found.</div>
           ) : (
-            logs.map((log) => (
+            logs.map((log: any) => (
               <div key={log.id} className="p-6 flex items-start space-x-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                 <div className="mt-1">
                   {getStatusIcon(log.status)}

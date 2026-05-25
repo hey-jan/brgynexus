@@ -24,25 +24,30 @@ const CustomTooltipStyle = {
   fontSize: "13px",
 };
 
+import { useQuery } from '@tanstack/react-query';
+
 export default function AnalyticsPage() {
-  const [analytics, setAnalytics] = React.useState<any>(null);
-  const [reports, setReports] = React.useState<any>(null);
-  const [isMounted, setIsMounted] = React.useState(false);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin-analytics-reports'],
+    queryFn: async () => {
+      const [analyticsRes, reportsRes] = await Promise.all([
+        fetch("/api/analytics"),
+        fetch("/api/reports")
+      ]);
+      if (!analyticsRes.ok || !reportsRes.ok) throw new Error("Failed to load analytics data");
+      return {
+        analytics: await analyticsRes.json(),
+        reports: await reportsRes.json()
+      };
+    }
+  });
 
   React.useEffect(() => {
-    setIsMounted(true);
-    Promise.all([
-      fetch("/api/analytics").then((r) => r.json()),
-      fetch("/api/reports").then((r) => r.json()),
-    ])
-      .then(([analyticsData, reportsData]) => {
-        setAnalytics(analyticsData);
-        setReports(reportsData);
-      })
-      .catch(() => toast.error("Failed to load analytics data"));
-  }, []);
+    if (isError) toast.error("Failed to load analytics data");
+  }, [isError]);
 
-  const isLoading = !isMounted || !analytics || !reports;
+  const analytics = data?.analytics;
+  const reports = data?.reports;
 
   // Enrich status chart with colors
   const statusChart = analytics?.statusChart?.map((s: any) => ({

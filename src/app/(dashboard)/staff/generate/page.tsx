@@ -2,27 +2,25 @@
 
 import * as React from "react";
 import { format } from "date-fns";
+import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/Button";
 import { FileText, Printer, Loader2, FileBadge } from "lucide-react";
 import { toast } from "sonner";
 
 export default function GenerateDocumentsPage() {
-  const [requests, setRequests] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { data: requests = [], isLoading, refetch: fetchApprovedRequests } = useQuery({
+    queryKey: ['staff-generate-requests'],
+    queryFn: async () => {
+      const res = await fetch('/api/requests');
+      if (!res.ok) throw new Error('Failed to fetch requests');
+      const data = await res.json();
+      return data.filter((req: any) => req.status === 'APPROVED');
+    }
+  });
+
   const [isGenerating, setIsGenerating] = React.useState<string | null>(null);
 
-  const fetchApprovedRequests = () => {
-    fetch('/api/requests')
-      .then(res => res.json())
-      .then(data => {
-        setRequests(data.filter((req: any) => req.status === 'APPROVED'));
-        setIsLoading(false);
-      });
-  };
 
-  React.useEffect(() => {
-    fetchApprovedRequests();
-  }, []);
 
   const handleGenerate = async (id: string, residentName: string, docName: string) => {
     setIsGenerating(id);
@@ -93,7 +91,7 @@ export default function GenerateDocumentsPage() {
                   </td>
                 </tr>
               ) : (
-                requests.map((req) => {
+                requests.map((req: any) => {
                   const residentName = req.residentId
                     ? `${req.resident?.user?.firstName ?? ""} ${req.resident?.user?.lastName ?? ""}`.trim()
                     : (req.guestName ?? "Guest");

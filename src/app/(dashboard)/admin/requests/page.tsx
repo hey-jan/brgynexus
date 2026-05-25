@@ -5,22 +5,22 @@ import { format } from "date-fns";
 import { Search, Filter, FileText, User, Calendar, CheckCircle2, Clock, XCircle, FileBadge } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 
+import { useQuery } from '@tanstack/react-query';
+
 export default function AdminRequestsPage() {
-  const [requests, setRequests] = React.useState<any[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("ALL");
 
-  React.useEffect(() => {
-    fetch('/api/requests')
-      .then(res => res.json())
-      .then(data => {
-        setRequests(data);
-        setIsLoading(false);
-      });
-  }, []);
+  const { data: requests = [], isLoading } = useQuery({
+    queryKey: ['admin-requests'],
+    queryFn: async () => {
+      const res = await fetch('/api/requests');
+      if (!res.ok) throw new Error('Failed to fetch requests');
+      return res.json();
+    }
+  });
 
-  const filteredRequests = requests.filter(req => {
+  const filteredRequests = requests.filter((req: any) => {
     const matchesSearch = 
       req.resident?.user?.firstName?.toLowerCase().includes(search.toLowerCase()) ||
       req.resident?.user?.lastName?.toLowerCase().includes(search.toLowerCase()) ||
@@ -104,7 +104,7 @@ export default function AdminRequestsPage() {
               ) : filteredRequests.length === 0 ? (
                 <tr><td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">No requests found matching your filters.</td></tr>
               ) : (
-                filteredRequests.map((req) => (
+                filteredRequests.map((req: any) => (
                   <tr key={req.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">

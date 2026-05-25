@@ -2,32 +2,30 @@
 
 import * as React from "react";
 import { FileCode, Save, FileText, AlertCircle } from "lucide-react";
+import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
 
 export default function AdminTemplatesPage() {
-  const [documents, setDocuments] = React.useState<any[]>([]);
   const [selectedDocId, setSelectedDocId] = React.useState<string | null>(null);
   const [templateContent, setTemplateContent] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const fetchDocuments = () => {
-    fetch('/api/documents')
-      .then(res => res.json())
-      .then(data => {
-        setDocuments(data);
-        setIsLoading(false);
-        if (data.length > 0 && !selectedDocId) {
-          handleSelect(data[0]);
-        }
-      });
-  };
+  const { data: documents = [], isLoading, refetch: fetchDocuments } = useQuery({
+    queryKey: ['admin-templates'],
+    queryFn: async () => {
+      const res = await fetch('/api/documents');
+      if (!res.ok) throw new Error('Failed to fetch templates');
+      return res.json();
+    }
+  });
 
   React.useEffect(() => {
-    fetchDocuments();
-  }, []);
+    if (documents.length > 0 && !selectedDocId) {
+      handleSelect(documents[0]);
+    }
+  }, [documents, selectedDocId]);
 
   const handleSelect = (doc: any) => {
     setSelectedDocId(doc.id);
@@ -69,7 +67,7 @@ export default function AdminTemplatesPage() {
         {/* Document List */}
         <div className="w-full lg:w-1/3 space-y-2">
           <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Select Document</h3>
-          {documents.map((doc) => (
+          {documents.map((doc: any) => (
             <button
               key={doc.id}
               onClick={() => handleSelect(doc)}
