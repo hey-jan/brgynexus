@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Check, X, FileText } from "lucide-react";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const STANDARD_PURPOSES = [
   "Employment Requirement",
@@ -18,6 +18,7 @@ const STANDARD_PURPOSES = [
 ];
 
 export default function PendingRequestsPage() {
+  const queryClient = useQueryClient();
   const [reviewModalOpen, setReviewModalOpen] = React.useState(false);
   const [selectedRequest, setSelectedRequest] = React.useState<any>(null);
   const [translatedPurpose, setTranslatedPurpose] = React.useState('');
@@ -97,6 +98,7 @@ export default function PendingRequestsPage() {
       
       toast.success(`Request ${newStatus.toLowerCase()} successfully`);
       refetch(); // Refresh the list
+      queryClient.invalidateQueries({ queryKey: ['staff-generate-requests'] });
     } catch (error) {
       toast.error("Failed to process request");
     }
