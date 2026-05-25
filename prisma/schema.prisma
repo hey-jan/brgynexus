@@ -1,12 +1,150 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id               String             @id @default(uuid())
+  firstName        String
+  middleName       String?
+  lastName         String
+  email            String             @unique
+  passwordHash     String
+  phone            String?
+  role             Role               @default(RESIDENT)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  announcements    Announcement[]
+  auditLogs        AuditLog[]
+  handledRequests  DocumentRequest[]  @relation("HandledBy")
+  receivedPayments Payment[]          @relation("ReceivedBy")
+  statusLogs       RequestStatusLog[] @relation("ChangedBy")
+  residentProfile  ResidentProfile?
+  staffAssignments StaffAssignment[]
+}
+
+model ResidentProfile {
+  id           String            @id @default(uuid())
+  userId       String            @unique
+  gender       Gender
+  address      String
+  birthdate    DateTime
+  civilStatus  CivilStatus
+  isVerified   Boolean           @default(false)
+  residentType ResidentType      @default(PERMANENT)
+  lengthOfStay String?
+  requests     DocumentRequest[]
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id              String            @id @default(uuid())
+  name            String
+  description     String?
+  fee             Float             @default(0)
+  processingDays  Int               @default(1)
+  isActive        Boolean           @default(true)
+  templateContent String?
+  requests        DocumentRequest[]
+}
+
+model DocumentRequest {
+  id                String             @id @default(uuid())
+  residentId        String?
+  guestName         String?
+  guestAddress      String?
+  proofPresented    String?
+  documentId        String
+  purpose           String
+  translatedPurpose String?
+  status            RequestStatus      @default(PENDING)
+  source            String?            @default("WEB")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  releasedAt        DateTime?
+  handledById       String?
+  document          Document           @relation(fields: [documentId], references: [id])
+  handledBy         User?              @relation("HandledBy", fields: [handledById], references: [id])
+  resident          ResidentProfile?   @relation(fields: [residentId], references: [id])
+  issuedDocument    IssuedDocument?
+  payment           Payment?
+  statusLogs        RequestStatusLog[]
+}
+
+model RequestStatusLog {
+  id          String          @id @default(uuid())
+  requestId   String
+  status      RequestStatus
+  remarks     String?
+  changedById String
+  createdAt   DateTime        @default(now())
+  changedBy   User            @relation("ChangedBy", fields: [changedById], references: [id])
+  request     DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}
+
+model IssuedDocument {
+  id             String          @id @default(uuid())
+  requestId      String          @unique
+  documentNumber String          @unique
+  qrCodeHash     String          @unique
+  issuedDate     DateTime        @default(now())
+  expiryDate     DateTime?
+  request        DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id            String          @id @default(uuid())
+  requestId     String          @unique
+  amount        Float
+  paymentMethod PaymentMethod
+  referenceNo   String?
+  paidAt        DateTime        @default(now())
+  receivedById  String?
+  receivedBy    User?           @relation("ReceivedBy", fields: [receivedById], references: [id])
+  request       DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}
+
+model StaffAssignment {
+  id       String  @id @default(uuid())
+  userId   String
+  position String
+  isActive Boolean @default(true)
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  priority  String   @default("NORMAL")
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+}
+
+model BarangaySettings {
+  id           String   @id @default("default")
+  barangayName String   @default("Barangay Nexus")
+  city         String   @default("City/Municipality")
+  province     String   @default("Province")
+  logoUrl      String?
+  captainName  String   @default("Hon. Juan Dela Cruz")
+  captainTitle String   @default("Punong Barangay")
+  signatureUrl String?
+  updatedAt    DateTime @updatedAt
 }
 
 enum Role {
@@ -44,158 +182,4 @@ enum PaymentMethod {
   CASH
   GCASH
   OTHER
-}
-
-model User {
-  id           String   @id @default(uuid())
-  firstName    String
-  middleName   String?
-  lastName     String
-  email        String   @unique
-  passwordHash String
-  phone        String?
-  role         Role     @default(RESIDENT)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relationships
-  residentProfile  ResidentProfile?
-  handledRequests  DocumentRequest[]  @relation("HandledBy")
-  receivedPayments Payment[]          @relation("ReceivedBy")
-  statusLogs       RequestStatusLog[] @relation("ChangedBy")
-  staffAssignments StaffAssignment[]
-  auditLogs        AuditLog[]
-  announcements    Announcement[]
-}
-
-model ResidentProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  gender      Gender
-  address     String
-  birthdate   DateTime
-  civilStatus CivilStatus
-  isVerified  Boolean     @default(false)
-  residentType ResidentType @default(PERMANENT)
-  lengthOfStay String?
-
-  requests DocumentRequest[]
-}
-
-model Document {
-  id             String  @id @default(uuid())
-  name           String
-  description    String?
-  fee            Float   @default(0)
-  processingDays Int     @default(1)
-  isActive       Boolean @default(true)
-  templateContent String? @db.Text
-
-  requests DocumentRequest[]
-}
-
-model DocumentRequest {
-  id         String          @id @default(uuid())
-  residentId String?
-  resident   ResidentProfile? @relation(fields: [residentId], references: [id])
-  guestName  String?
-  guestAddress String?
-  proofPresented String?
-  documentId String
-  document   Document        @relation(fields: [documentId], references: [id])
-  purpose    String
-  translatedPurpose String?
-  status     RequestStatus   @default(PENDING)
-  source     String?         @default("WEB") // WEB, KIOSK, etc.
-
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  releasedAt DateTime?
-
-  handledById String?
-  handledBy   User?   @relation("HandledBy", fields: [handledById], references: [id])
-
-  statusLogs     RequestStatusLog[]
-  issuedDocument IssuedDocument?
-  payment        Payment?
-}
-
-model RequestStatusLog {
-  id        String          @id @default(uuid())
-  requestId String
-  request   DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  status    RequestStatus
-  remarks   String?
-
-  changedById String
-  changedBy   User   @relation("ChangedBy", fields: [changedById], references: [id])
-
-  createdAt DateTime @default(now())
-}
-
-model IssuedDocument {
-  id             String          @id @default(uuid())
-  requestId      String          @unique
-  request        DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  documentNumber String          @unique
-  qrCodeHash     String          @unique
-
-  issuedDate DateTime  @default(now())
-  expiryDate DateTime?
-}
-
-model Payment {
-  id            String          @id @default(uuid())
-  requestId     String          @unique
-  request       DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  amount        Float
-  paymentMethod PaymentMethod
-  referenceNo   String?
-
-  paidAt DateTime @default(now())
-
-  receivedById String?
-  receivedBy   User?   @relation("ReceivedBy", fields: [receivedById], references: [id])
-}
-
-model StaffAssignment {
-  id       String  @id @default(uuid())
-  userId   String
-  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  position String
-  isActive Boolean @default(true)
-}
-
-model AuditLog {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  action    String
-  details   String?
-  createdAt DateTime @default(now())
-}
-
-model Announcement {
-  id        String   @id @default(uuid())
-  title     String
-  content   String   @db.Text
-  priority  String   @default("NORMAL") // NORMAL, HIGH, EMERGENCY
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model BarangaySettings {
-  id              String   @id @default("default")
-  barangayName    String   @default("Barangay Sambag I")
-  city            String   @default("Cebu City")
-  province        String   @default("Cebu")
-  logoUrl         String?  @db.Text
-  captainName     String   @default("Hon. John Earl P. Balabat")
-  captainTitle    String   @default("Punong Barangay")
-  signatureUrl    String?  @db.Text
-  updatedAt       DateTime @updatedAt
 }
