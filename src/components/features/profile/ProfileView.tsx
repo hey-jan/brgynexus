@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { User, Mail, Phone, MapPin, Calendar, BadgeCheck, Edit2, Save, X, AlertTriangle } from "lucide-react";
+import { User, Mail, Phone, MapPin, Calendar, BadgeCheck, Edit2, Save, X } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -63,37 +63,8 @@ export function ProfileView() {
   if (isLoading) return <div className="p-8 text-center text-slate-500">Loading profile...</div>;
   if (!profile) return null;
 
-  const isIncomplete =
-    !profile.phone ||
-    !profile.residentProfile?.address ||
-    profile.residentProfile?.address === "Pending Update" ||
-    (profile.residentProfile?.birthdate &&
-      new Date(profile.residentProfile.birthdate).getFullYear() === new Date().getFullYear() &&
-      new Date(profile.residentProfile.birthdate).getMonth() === new Date().getMonth());
-
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      {/* Incomplete profile banner */}
-      {isIncomplete && !isEditing && (
-        <div className="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 animate-in fade-in duration-300">
-          <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">Profile incomplete</p>
-            <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-              Please update your address, phone number, and birthdate so your documents are issued with accurate information.
-            </p>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setIsEditing(true)}
-            className="border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-400 shrink-0"
-          >
-            Complete Now
-          </Button>
-        </div>
-      )}
-
       {/* Simple Header */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="flex items-center gap-4">
