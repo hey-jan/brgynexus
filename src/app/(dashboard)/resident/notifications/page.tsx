@@ -19,7 +19,7 @@ export default function NotificationsPage() {
   const getStatusInfo = (status: string) => {
     switch(status) {
       case 'APPROVED': return { 
-        icon: <CheckCircle2 className="h-5 w-5 text-green-500" />, 
+        icon: <CheckCircle2 className="h-5 w-5 text-blue-500" />, 
         title: "Request Approved",
         desc: "Your document has been approved and is now being processed."
       };
