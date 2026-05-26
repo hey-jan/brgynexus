@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { toast } from "sonner";
-import { FileText, Clock, DollarSign, Loader2, ChevronRight } from "lucide-react";
+import { FileText, Clock, DollarSign, Loader2, ChevronRight, ChevronDown, X, Check } from "lucide-react";
 
 const STANDARD_PURPOSES = [
   "Employment Requirement",
@@ -34,12 +34,19 @@ export default function RequestDocumentPage() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [purposeType, setPurposeType] = React.useState("");
   const [selectedDocId, setSelectedDocId] = React.useState("");
+  const [isDocModalOpen, setIsDocModalOpen] = React.useState(false);
 
   const selectedDoc = documents.find((d: any) => d.id === selectedDocId);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    if (!selectedDocId) {
+      toast.error("Please select a document type.");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const formData = new FormData(e.currentTarget);
@@ -56,7 +63,7 @@ export default function RequestDocumentPage() {
         return;
       }
 
-      const payload = { documentId: data.documentId, purpose: finalPurpose };
+      const payload = { documentId: selectedDocId, purpose: finalPurpose };
 
       const response = await fetch('/api/requests', {
         method: 'POST',
@@ -76,7 +83,7 @@ export default function RequestDocumentPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 relative">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <FileText className="h-7 w-7 text-blue-600" />
@@ -95,19 +102,31 @@ export default function RequestDocumentPage() {
             <label htmlFor="documentId" className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
               Select Document Type
             </label>
+            
+            {/* Desktop Select */}
             <select
               id="documentId"
-              name="documentId"
-              required
               value={selectedDocId}
               onChange={(e) => setSelectedDocId(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+              className="hidden md:block mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
             >
               <option value="">Choose a document type...</option>
               {documents.map((doc: any) => (
                 <option key={doc.id} value={doc.id}>{doc.name}</option>
               ))}
             </select>
+
+            {/* Mobile Button Trigger */}
+            <button
+              type="button"
+              onClick={() => setIsDocModalOpen(true)}
+              className="md:hidden mt-1 w-full flex items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 text-left"
+            >
+              <span className={selectedDocId ? "text-slate-900 dark:text-slate-100" : "text-slate-500 dark:text-slate-400"}>
+                {selectedDocId ? documents.find((d: any) => d.id === selectedDocId)?.name : "Choose a document type..."}
+              </span>
+              <ChevronDown className="h-4 w-4 text-slate-400" />
+            </button>
           </div>
 
           {/* Dynamic document info card */}
@@ -157,7 +176,7 @@ export default function RequestDocumentPage() {
               required
               value={purposeType}
               onChange={(e) => setPurposeType(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+              className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
             >
               <option value="">Select a purpose...</option>
               {STANDARD_PURPOSES.map(purpose => (
@@ -196,6 +215,45 @@ export default function RequestDocumentPage() {
           </Button>
         </form>
       </div>
+
+      {/* Mobile Modal for Document Selection */}
+      {isDocModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm md:hidden">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-2xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-full duration-300">
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+              <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Select Document</h3>
+              <button 
+                type="button" 
+                onClick={() => setIsDocModalOpen(false)} 
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-3 max-h-[60vh] overflow-y-auto space-y-1">
+              {documents.map((doc: any) => (
+                <button
+                  key={doc.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedDocId(doc.id);
+                    setIsDocModalOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-xl flex items-center justify-between transition-colors ${
+                    selectedDocId === doc.id 
+                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium' 
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  {doc.name}
+                  {selectedDocId === doc.id && <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

@@ -24,6 +24,7 @@ export function Accordion({ items }: { items: AccordionItemProps[] }) {
           <div key={index} className="border border-slate-200 dark:border-slate-800 rounded-md overflow-hidden">
             <button
               onClick={() => toggle(index)}
+              suppressHydrationWarning
               className="flex w-full items-center justify-between bg-white dark:bg-slate-950 px-4 py-4 text-left text-sm font-medium transition-all hover:bg-slate-50 dark:hover:bg-slate-900"
             >
               {item.title}
