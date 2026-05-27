@@ -105,7 +105,7 @@ export async function seedUsers(prisma: any) {
     update: {},
     create: { 
       userId: johnEarl.id, 
-      address: 'Brgy. Nexus, City of Manila', 
+      address: 'Brgy. Nexus, City of Cebu', 
       gender: 'MALE', 
       civilStatus: 'SINGLE', 
       birthdate: new Date('1990-01-01'),

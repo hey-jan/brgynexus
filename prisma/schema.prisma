@@ -137,7 +137,7 @@ model Announcement {
 
 model BarangaySettings {
   id           String   @id @default("default")
-  barangayName String   @default("Barangay Nexus")
+  barangayName String   @default("Barangay Sambag I")
   city         String   @default("City/Municipality")
   province     String   @default("Province")
   logoUrl      String?
