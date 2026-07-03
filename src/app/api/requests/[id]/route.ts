@@ -11,12 +11,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params;
     
-    // We allow fetching without auth for kiosk status check, but only basic info
+    const token = request.cookies.get('brgynexus_session')?.value;
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    const { payload } = await jwtVerify(token, secret);
+
     const reqData = await prisma.documentRequest.findFirst({
       where: {
-        id: {
-          startsWith: id.toLowerCase()
-        }
+        id: id
       },
       include: {
         document: true,

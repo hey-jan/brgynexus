@@ -10,7 +10,6 @@ Currently configured for **Barangay Sambag I, Cebu City**.
 *   **Digital Document Requests:** Residents can request clearances, indigency certificates, and more online.
 *   **Automated PDF Generation:** Staff can review and generate official, printable PDF certificates with a single click using `@react-pdf/renderer`.
 *   **QR Code Verification:** Every generated document includes a unique tracking number and QR code to prevent forgery and allow instant authenticity verification.
-*   **Kiosk Mode:** A dedicated public-facing interface for walk-in residents and guests to check status or request documents on-site.
 *   **Admin Analytics:** Rich visual dashboards tracking revenue, request volumes, and document issuance trends over time.
 
 ## 💻 Tech Stack
@@ -72,7 +71,7 @@ If you have run the database seed, you can use the following default accounts to
 
 ## 📸 Screenshots
 
-*(Add your screenshots here! Recommended: Admin Dashboard, PDF Generation Flow, and Kiosk Mode)*
+*(Add your screenshots here! Recommended: Admin Dashboard, and PDF Generation Flow)*
 
 ---
 *Built by John Earl P. Balabat*

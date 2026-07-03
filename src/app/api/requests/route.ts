@@ -55,34 +55,28 @@ export async function POST(request: NextRequest) {
 
     let finalResidentId = residentId;
 
-    // If not from kiosk, verify session
-    if (source !== 'kiosk') {
-      const token = request.cookies.get('brgynexus_session')?.value;
-      if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      
-      const { payload } = await jwtVerify(token, secret);
-      if (payload.role !== 'RESIDENT') return NextResponse.json({ error: 'Only residents can request documents' }, { status: 403 });
+    const token = request.cookies.get('brgynexus_session')?.value;
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    const { payload } = await jwtVerify(token, secret);
+    if (payload.role !== 'RESIDENT') return NextResponse.json({ error: 'Only residents can request documents' }, { status: 403 });
 
-      const profile = await prisma.residentProfile.findUnique({ where: { userId: payload.userId as string } });
-      if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
-      
-      finalResidentId = profile.id;
-    }
+    const profile = await prisma.residentProfile.findUnique({ where: { userId: payload.userId as string } });
+    if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+    
+    finalResidentId = profile.id;
 
-    const isGuest = source === 'kiosk' && guestName && guestAddress;
-    if (!documentId || !purpose || (!finalResidentId && !isGuest)) {
+    if (!documentId || !purpose || !finalResidentId) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
     const documentRequest = await prisma.documentRequest.create({
       data: {
-        residentId: finalResidentId || undefined,
-        guestName: guestName || undefined,
-        guestAddress: guestAddress || undefined,
+        residentId: finalResidentId,
         documentId,
         purpose,
         status: 'PENDING',
-        source: source || 'WEB',
+        source: 'WEB',
       } as any,
     });
 

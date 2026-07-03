@@ -59,7 +59,7 @@
 *Goal: Risk management and physical deployment.*
 
 **4.1 Tech & Space**
-*   Is there physical space and a power outlet for a resident-facing kiosk? ___________________
+*   What kind of internet connection is available (Fiber, DSL, Mobile Data)? ___________________
 *   Is the internet/electricity stable enough for a 100% digital system? ___________________
 
 **4.2 Failure Scenarios**
@@ -102,7 +102,7 @@
 *   [ ] Get a sample of all printed documents (Check layout, watermark, and header styles).
 *   [ ] Ask for a high-resolution Barangay Seal file.
 *   [ ] Check the physical logbook for data columns we might have missed.
-*   [ ] Identify the best spot for a physical kiosk.
+*   [ ] Verify printer connectivity and driver installation.
 *   [ ] **Finalize the "Officials" list for the document header.**
 
 ---
